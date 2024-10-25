@@ -1,3 +1,5 @@
+
+
 CREATE DATABASE tastXbd;
 USE tastXbd;
 
