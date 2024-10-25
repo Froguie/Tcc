@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +13,12 @@
 
 <header class="navbar">
     <h1>Bem-vindo à Loja</h1>
-    <a href="login.php">Login</a>
+    <?php if (isset($_SESSION['nome'])): ?>
+        <h3>Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?></h3>
+        <a href="logout.php">Logout</a>
+    <?php else: ?>
+        <a href="login.php">Login</a>
+    <?php endif; ?>
 </header>
 
 <div class="container">

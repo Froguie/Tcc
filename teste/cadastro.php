@@ -1,6 +1,29 @@
+<?php
+include("../backend/conexao.php");
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+
+    // Use prepared statement
+    $stmt = $conexao->prepare("INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $nome, $email, $senha);
+    
+    if ($stmt->execute()) {
+        // Redirect to login page or show success message
+        header("Location: login.php?success=1");
+        exit();
+    } else {
+        echo "Erro ao cadastrar: " . $stmt->error;
+    }
+    $stmt->close();
+    $conexao->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +40,7 @@
     <div class="flex justify-center items-center h-screen">
         <div class="bg-white p-6 rounded shadow-md w-1/3">
             <h2 class="text-2xl text-black font-bold mb-4">Cadastro</h2>
-            <form action="cadastro_process.php" method="POST" class="space-y-4">
+            <form action="cadastro.php" method="POST" class="space-y-4">
                 <div>
                     <label for="nome" class="text-black block">Usuário:</label>
                     <input type="text" name="nome" id="nome" class="w-full border rounded p-2 text-black" required>
@@ -35,5 +58,4 @@
         </div>
     </div>
 </body>
-
 </html>
