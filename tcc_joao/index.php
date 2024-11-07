@@ -1,26 +1,34 @@
 <?php
-// Dados das mesas e status
-$caixaData = [
-    ['id' => 1, 'title' => '01'],
-    ['id' => 2, 'title' => '02'],
-    ['id' => 3, 'title' => '03'],
-    ['id' => 4, 'title' => '04'],
-    ['id' => 5, 'title' => '05'],
-    ['id' => 6, 'title' => '06'],
-    ['id' => 7, 'title' => '07'],
-    ['id' => 8, 'title' => '08'],
-    ['id' => 9, 'title' => '09']
-];
+session_start();
 
-$livreData = [
-    'title' => 'Livre',
-    'mesa' => 'Mesa 01'
-];
+// Inicializar as mesas na sessão, se ainda não estiverem definidas
+if (!isset($_SESSION['mesas'])) {
+    $_SESSION['mesas'] = [
+        ['id' => 1, 'title' => '01'],
+        ['id' => 2, 'title' => '02'],
+        ['id' => 3, 'title' => '03'],
+        ['id' => 4, 'title' => '04'],
+        ['id' => 5, 'title' => '05'],
+        ['id' => 6, 'title' => '06'],
+        ['id' => 7, 'title' => '07'],
+        ['id' => 8, 'title' => '08'],
+        ['id' => 9, 'title' => '09']
+    ];
+}
 
-$emUsoData = [
-    'title' => 'Em uso',
-    'mesa' => 'Mesa 00'
-];
+// Funções para adicionar ou excluir mesas
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        if ($_POST['action'] === 'add') {
+            // Adicionar uma nova mesa com um ID incrementado
+            $newId = count($_SESSION['mesas']) + 1;
+            $_SESSION['mesas'][] = ['id' => $newId, 'title' => str_pad($newId, 2, '0', STR_PAD_LEFT)];
+        } elseif ($_POST['action'] === 'delete') {
+            // Remover a última mesa se existir
+            array_pop($_SESSION['mesas']);
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,19 +60,29 @@ $emUsoData = [
     <div class="w-3/4">
       <!-- Botões de Adicionar e Excluir Mesas -->
       <div class="flex justify-between mb-4">
-        <button onclick="adicionarMesa()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-          Adicionar Mesa
-        </button>
-        <button onclick="excluirMesa()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-          Excluir Mesa
-        </button>
+        <!-- Formulário para adicionar mesa -->
+        <form method="POST" class="inline">
+          <input type="hidden" name="action" value="add">
+          <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+            Adicionar Mesa
+          </button>
+        </form>
+        <!-- Formulário para excluir mesa -->
+        <form method="POST" class="inline">
+          <input type="hidden" name="action" value="delete">
+          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+            Excluir Mesa
+          </button>
+        </form>
       </div>
+      
       <!-- Grid de Mesas -->
-      <div class="grid grid-cols-3 gap-4 bg-yellow-300 p-6 rounded-lg">
-        <?php foreach ($caixaData as $item): ?>
-          <div class="bg-yellow-500 text-center text-xl font-bold py-6 rounded-lg shadow-md">
-            <?= $item['title'] ?>
-          </div>
+      <div class="grid grid-cols-3 gap-4 bg-yellow-300 p-10 rounded-lg">
+        <?php foreach ($_SESSION['mesas'] as $mesa): ?>
+            <div class="mx-auto bg-yellow-500 text-center text-xl font-bold py-10 w-1/2 rounded-lg shadow-md aspect-square flex items-center justify-center">
+    <?= $mesa['title'] ?>
+      </div>
+
         <?php endforeach; ?>
       </div>
     </div>
@@ -72,28 +90,15 @@ $emUsoData = [
     <!-- Status das Mesas -->
     <div class="w-1/4 flex flex-col space-y-4 ml-6">
       <div class="bg-gray-200 p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-bold"><?= $livreData['title'] ?></h3>
-        <p class="mt-2 text-lg"><?= $livreData['mesa'] ?></p>
+        <h3 class="text-xl font-bold">Livre</h3>
+        <p class="mt-2 text-lg">Mesa 01</p>
       </div>
       <div class="bg-gray-300 p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-bold"><?= $emUsoData['title'] ?></h3>
-        <p class="mt-2 text-lg"><?= $emUsoData['mesa'] ?></p>
+        <h3 class="text-xl font-bold">Em uso</h3>
+        <p class="mt-2 text-lg">Mesa 00</p>
       </div>
     </div>
   </div>
-
-  <script>
-    // Função para adicionar mesa
-    function adicionarMesa() {
-      alert('A função de adicionar mesa será implementada aqui.');
-      // Aqui você poderia adicionar código para enviar uma requisição ao servidor para adicionar uma mesa
-    }
-
-    // Função para excluir mesa
-    function excluirMesa() {
-      alert('A função de excluir mesa será implementada aqui.');
-      // Aqui você poderia adicionar código para enviar uma requisição ao servidor para excluir uma mesa
-    }
-  </script>
 </body>
 </html>
+
