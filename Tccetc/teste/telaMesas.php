@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_result($currentStatus);
             $stmt->fetch();
             $stmt->close();
-            
+
             $newStatus = ($currentStatus === 'livre') ? 'ocupada' : 'livre'; // Alterna entre 'livre' e 'ocupada'
             $stmt = $conexao->prepare("UPDATE mesa SET statusMesa = ? WHERE codMesa = ?");
             $stmt->bind_param("si", $newStatus, $mesaId);
@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Função para obter todas as mesas do banco de dados
-function getmesa($status = null) {
+function getmesa($status = null)
+{
     global $conexao;
     $mesa = [];
     $query = "SELECT * FROM mesa";
@@ -74,6 +75,7 @@ $ocupadaMesas = getmesa('ocupada');
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,16 +86,20 @@ $ocupadaMesas = getmesa('ocupada');
         /* Estilo do popup (modal) no canto superior direito */
         .popup {
             position: fixed;
-            top: 20px; /* Distância do topo */
-            right: 20px; /* Distância da borda direita */
+            top: 20px;
+            /* Distância do topo */
+            right: 20px;
+            /* Distância da borda direita */
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 15px;
             border-radius: 8px;
-            display: none; /* Inicialmente oculto */
+            display: none;
+            /* Inicialmente oculto */
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
+
         .popup.show {
             display: block;
         }
@@ -109,6 +115,14 @@ $ocupadaMesas = getmesa('ocupada');
                     Olá, <?php echo $_SESSION['nome'] ?? 'Usuário desconhecido'; ?>
                 </span>
             </a>
+            <div class="flex space-x-4">
+                <!-- Link para Caixa -->
+                <a href="/caixa.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Caixa</a>
+                <!-- Link para Mesas -->
+                <a href="/mesas.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Mesas</a>
+                <!-- Link para Produto -->
+                <a href="/produto.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Produto</a>
+            </div>
         </div>
     </nav>
 
@@ -125,7 +139,9 @@ $ocupadaMesas = getmesa('ocupada');
                 <!-- Botão para adicionar mesa -->
                 <form method="POST" class="inline">
                     <input type="hidden" name="action" value="add">
-                    <button type="submit" class="bg-black hover:bg-green-600 text-white font-bold py-2 px-4 rounded" <?php if (count(getmesa()) >= $maxmesa) echo 'disabled'; ?> >
+                    <button type="submit" class="bg-black hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                        <?php if (count(getmesa()) >= $maxmesa)
+                            echo 'disabled'; ?>>
                         Adicionar Mesa
                     </button>
                 </form>
@@ -184,10 +200,11 @@ $ocupadaMesas = getmesa('ocupada');
         <?php if ($message): ?>
             document.getElementById('popup-message').innerText = "<?= $message; ?>";
             var popup = document.getElementById('popup');
-            setTimeout(function() {
+            setTimeout(function () {
                 popup.classList.remove('show');
             }, 3000); // Esconde o popup após 3 segundos
         <?php endif; ?>
     </script>
 </body>
+
 </html>
