@@ -1,5 +1,5 @@
 <?php
-include("../backend/conexao.php");
+include("./backend/conexao.php");
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $insertAdmin = $conexao->prepare("INSERT IGNORE INTO administrador (codAdmin, nomeAdministrador) VALUES (?, ?)");
                     $insertAdmin->bind_param("is", $id, $nome);
                     $insertAdmin->execute();
-                    header('Location: admin.php');
+                    header('Location: ./teste/admin.php');
                     break;
                 
                 case 'cozinha':
