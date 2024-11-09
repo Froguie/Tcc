@@ -41,15 +41,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="cadastro.php" method="POST" class="space-y-5">
             <div>
                 <label for="nome" class="text-white block mb-1">Usuário:</label>
-                <input placeholder="João Victor" type="text" name="nome" id="nome" class="w-full border rounded p-2 text-black" required>
+                <input placeholder="João Victor" type="text" name="nome" id="nome"
+                    class="w-full border rounded p-2 text-black" required>
             </div>
             <div>
                 <label for="email" class="text-white block mb-1">Email:</label>
-                <input placeholder="exemplo@gmail.com" type="email" name="email" id="email" class="w-full border rounded p-2 text-black" required>
+                <input placeholder="exemplo@gmail.com" type="email" name="email" id="email"
+                    class="w-full border rounded p-2 text-black" required>
             </div>
             <div>
                 <label for="senha" class="text-white block mb-1">Senha:</label>
-                <input placeholder="********" type="password" name="senha" id="senha" class="w-full border rounded p-2 text-black" required>
+                <input placeholder="********" type="password" name="senha" id="senha"
+                    class="w-full border rounded p-2 text-black" required>
             </div>
             <div>
                 <label class="text-white block mb-1">Categoria:</label>
@@ -57,14 +60,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="mesa">Mesa</option>
                     <option value="administrador">Administrador</option>
                     <option value="funcionario">Funcionário</option>
-                    <option value="administrador">Cozinha</option>
+                    <option value="cozinha">Cozinha</option>
                 </select>
+
             </div>
             <div class="flex justify-center mt-4">
-                <button type="submit" class="bg-orange-300 text-black px-4 py-2 w-full rounded transition-transform transform hover:scale-105 hover:bg-orange-400">Cadastrar</button>
+                <button type="submit"
+                    class="bg-orange-300 text-black px-4 py-2 w-full rounded transition-transform transform hover:scale-105 hover:bg-orange-400">Cadastrar</button>
             </div>
             <div class="flex justify-center">
-                <p class="text-white text-center">Já tem cadastro? <a href="login.php" class="text-orange-300 hover:underline">Entre</a></p>
+                <p class="text-white text-center">Já tem cadastro? <a href="login.php"
+                        class="text-orange-300 hover:underline">Entre</a></p>
             </div>
         </form>
     </div>
