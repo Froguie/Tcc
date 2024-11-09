@@ -1,68 +1,114 @@
 <?php
+include("./backend/conexao.php");
 session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
+
+    // Preparando a consulta para evitar SQL Injection
+    $stmt = $conexao->prepare("SELECT codUsuario, nome, senha, tipoConta FROM usuario WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($id, $nome, $hashedPassword, $tipoConta);
+        $stmt->fetch();
+
+        if (password_verify($senha, $hashedPassword)) {
+            // Armazenando os dados do usuário na sessão
+            $_SESSION['usuario'] = [
+                'codUsuario' => $id,
+                'nome' => $nome,
+                'tipoConta' => $tipoConta
+            ];
+
+            // Copiar dados para a tabela correspondente, se necessário
+            switch ($tipoConta) {
+                case 'mesa':
+                    $insertMesa = $conexao->prepare("INSERT IGNORE INTO mesa (codMesa, nomeMesa) VALUES (?, ?)");
+                    $insertMesa->bind_param("is", $id, $nome);
+                    $insertMesa->execute();
+                    header('Location: cardapio.php');
+                    break;
+                
+                case 'funcionario':
+                    $insertFuncionario = $conexao->prepare("INSERT IGNORE INTO funcionario (codFuncionario, nomeFuncionario) VALUES (?, ?)");
+                    $insertFuncionario->bind_param("is", $id, $nome);
+                    $insertFuncionario->execute();
+                    header('Location: funcionario.php');
+                    break;
+                
+                case 'administrador':
+                    $insertAdmin = $conexao->prepare("INSERT IGNORE INTO administrador (codAdmin, nomeAdministrador) VALUES (?, ?)");
+                    $insertAdmin->bind_param("is", $id, $nome);
+                    $insertAdmin->execute();
+                    header('Location: ./teste/admin.php');
+                    break;
+                
+                case 'cozinha':
+                    $insertCozinha = $conexao->prepare("INSERT IGNORE INTO cozinha (codCozinha, nomeCozinha) VALUES (?, ?)");
+                    $insertCozinha->bind_param("is", $id, $nome);
+                    $insertCozinha->execute();
+                    header('Location: cozinha.php');
+                    break;
+            }
+            $_SESSION['nome'] = $nome;
+            exit();
+        } else {
+            echo "<script>alert('Senha incorreta.');</script>";
+        }
+    } else {
+        echo "<script>alert('Email não encontrado.');</script>";
+    }
+
+    $stmt->close();
+    $conexao->close();
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
 </head>
 
-<body class="bg-orange-300 flex flex-col min-h-screen overflow-hidden">
-    <!--NAVBAR-->
-    <nav class="bg-black border-gray-200">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a class="flex items-center space-x-3">
-                <div class="rounded-full bg-orange-300 h-8 w-8"></div>
-                <span class="self-center text-xl md:text-2xl font-semibold text-white whitespace-nowrap">
-                    Olá,
-                    <?php echo isset($_SESSION['usuario']) ? $_SESSION['usuario']['nome'] : 'Usuário desconhecido'; ?>
-                </span>
-            </a>
-
-            <!-- Menu Burger -->
-            <button id="menu-toggle" class="block md:hidden text-white focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
-                    </path>
-                </svg>
-            </button>
-
-            <!-- Links da Navbar -->
-            <div id="menu"
-                class="hidden w-full md:flex md:w-auto flex-col md:flex-row items-center md:space-x-4 mt-4 md:mt-0">
-                <a href="/caixa.php" class="text-white hover:bg-orange-600 px-3 md:px-4 py-2 rounded-md">Caixa</a>
-                <a href="/mesas.php" class="text-white hover:bg-orange-600 px-3 md:px-4 py-2 rounded-md">Mesas</a>
-                <a href="/produto.php" class="text-white hover:bg-orange-600 px-3 md:px-4 py-2 rounded-md">Produto</a>
-
-                <!-- Botão de Logout -->
-                <a href="logout.php" class="text-white bg-red-600 hover:bg-red-700 px-3 md:px-4 py-2 rounded-md">
-                    Sair
-                </a>
+<body class="bg-orange-300 flex items-center justify-center h-screen flex-col">
+    <div class="bg-black p-8 rounded-lg shadow-lg w-11/12 sm:w-1/3">
+        <h2 class="text-3xl text-white font-bold text-center mb-6">Login</h2>
+        <form action="login.php" method="POST" class="space-y-5">
+            <div>
+                <label for="email" class="text-white block mb-1">Email:</label>
+                <input type="email" name="email" id="email" placeholder="exemplo@gmail.com"
+                    class="w-full border rounded p-2 text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    required>
             </div>
-        </div>
-    </nav>
-
-    <!--CONTEUDO-->
-    <main class="flex-grow flex items-center justify-center flex-col text-center min-h-[500px] p-4">
-        <img src="./imagens/logo.png" alt="logo tasty" class="h-32 sm:h-40 md:h-48 lg:h-56 mb-4 md:mb-8">
-        <h1 class="text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl leading-none tracking-tight text-black mb-2">
-            TASTY X
-        </h1>
-        <h1
-            class="text-xl sm:text-2xl md:text-3xl px-4 py-2 rounded transition-transform transform hover:scale-105 mb-2">
-            Sua cozinha, nosso controle.
-        </h1>
-    </main>
-
-    <script src="https://cdn.tailwindcss.com"></script><!--tailwind-->
-    <script src="/src/scripts/navbarInicio.js"></script>
+            <div>
+                <label for="senha" class="text-white block mb-1">Senha:</label>
+                <input type="password" name="senha" id="senha" placeholder="******"
+                    class="w-full border rounded p-2 text-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    required>
+            </div>
+            <div class="flex justify-center">
+                <button type="submit"
+                    class="bg-orange-300 text-black px-4 py-2 rounded transition-transform transform hover:scale-105 w-full hover:bg-orange-400">
+                    Login
+                </button>
+            </div>
+            <div class="text-center text-white">
+                <p>Não tem cadastro? <a href="cadastro.php" class="text-orange-300 hover:underline">Crie uma conta</a></p>
+            </div>
+        </form>
+    </div>
+    <button class="rounded-md text-gray-800 hover:text-gray-900 transition-all hover:scale-105 mt-4 w-11/12 sm:w-1/3"
+        onclick="window.location.href='index.php'">Voltar para Página Inicial</button>
 </body>
 
 </html>
+

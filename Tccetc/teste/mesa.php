@@ -1,17 +1,29 @@
 <?php
-include 'data.php';
-
-$numeroMesa = $_GET['numero'] ?? null;
-$mesaSelecionada = $mesas[$numeroMesa - 1] ?? null;
-
-if (!$mesaSelecionada) {
-    echo "Mesa não encontrada!";
-    exit();
-}
-
+include 'data.php'; // Inclui a função para carregar as mesas
 session_start();
+
+// Verifica se a sessão está ativa
 if (!isset($_SESSION['nome'])) {
     $_SESSION['nome'] = 'Visitante'; // Nome padrão se não houver sessão.
+}
+
+// Carrega todas as mesas do banco
+$mesas = getMesas();
+
+// Verifica se a variável 'numero' foi passada na URL e é válida
+$numeroMesa = isset($_GET['numero']) ? intval($_GET['numero']) : null;
+
+// Verifica se a mesa selecionada existe no array
+$mesaSelecionada = $numeroMesa && isset($mesas[$numeroMesa - 1]) ? $mesas[$numeroMesa - 1] : null;
+
+// Caso não exista a mesa, redireciona de volta para a lista de mesas, mas sem gerar loop
+if (!$mesaSelecionada) {
+    // Verifica se a página atual já é 'mesa.php' antes de redirecionar
+    $currentUrl = $_SERVER['REQUEST_URI'];
+    if (strpos($currentUrl, 'mesa.php') === false) {
+        header("Location: mesa.php");
+        exit();
+    }
 }
 ?>
 
@@ -20,10 +32,9 @@ if (!isset($_SESSION['nome'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Gerenciar Mesa <?= htmlspecialchars($mesaSelecionada["numero"]); ?></title>
+    <title>Gerenciar Mesa <?= htmlspecialchars($mesaSelecionada["numero"] ?? 'Indefinido'); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-orange-300">
     <!--NAVBAR-->
     <nav class="bg-black border-gray-200">
@@ -64,36 +75,49 @@ if (!isset($_SESSION['nome'])) {
     </nav>
 
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold">Mesa <?= htmlspecialchars($mesaSelecionada["numero"]); ?></h1>
-        <p>Status: <span class="<?= $mesaSelecionada["status"] == 'Ocupada' ? 'text-red-600' : 'text-green-600' ?>">
-                <?= htmlspecialchars($mesaSelecionada["status"]); ?>
-            </span></p>
+        <?php if ($mesaSelecionada): ?>
+            <h1 class="text-3xl font-bold">Mesas <?= htmlspecialchars($mesaSelecionada["numero"]); ?></h1>
+            <p>Status: 
+                <span class="<?= $mesaSelecionada["status"] == 'Ocupada' ? 'text-red-600' : 'text-green-600' ?> transition duration-300 ease-in-out">
+                    <?= htmlspecialchars($mesaSelecionada["status"]); ?>
+                </span>
+            </p>
 
-        <div class="mt-4">
-            <h2 class="font-semibold">Pedidos:</h2>
-            <ul class="list-disc pl-5">
-                <!-- Verifica se a chave 'pedido' existe e se é um array -->
-                <?php if (isset($mesaSelecionada["pedido"]) && is_array($mesaSelecionada["pedido"])): ?>
-                    <?php foreach ($mesaSelecionada["pedido"] as $pedido): ?>
-                        <li>
-                            <?= htmlspecialchars($pedido["quantidade"]); ?>x
-                            <?= htmlspecialchars($pedido["item"]); ?> -
-                            R$<?= number_format($pedido["preco"], 2, ',', '.'); ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li>Nenhum pedido encontrado.</li>
-                <?php endif; ?>
-            </ul>
-        </div>
+            <div class="mt-4">
+                <h2 class="font-semibold">Pedidos:</h2>
+                <ul class="list-disc pl-5">
+                    <!-- Verifica se a chave 'pedido' existe e se é um array -->
+                    <?php if (isset($mesaSelecionada["pedido"]) && is_array($mesaSelecionada["pedido"]) && count($mesaSelecionada["pedido"]) > 0): ?>
+                        <?php foreach ($mesaSelecionada["pedido"] as $pedido): ?>
+                            <li>
+                                <?= htmlspecialchars($pedido["quantidade"]); ?>x
+                                <?= htmlspecialchars($pedido["item"]); ?> - R$<?= number_format($pedido["preco"], 2, ',', '.'); ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>Nenhum pedido encontrado.</li>
+                    <?php endif; ?>
+                </ul>
+            </div>
 
-        <div class="mt-6">
-            <a href="adicionarPedido.php?numero=<?= $mesaSelecionada['numero']; ?>"
-                class="bg-black hover:bg-green-600 text-white px-4 py-2 rounded-md">Adicionar Pedido</a>
-            <a href="atualizarStatus.php?numero=<?= $mesaSelecionada['numero']; ?>&status=Livre"
-                class="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md">Finalizar Mesa</a>
-        </div>
+            <div class="mt-6">
+                <a href="adicionarPedido.php?numero=<?= $mesaSelecionada['numero']; ?>"
+                    class="bg-black hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Adicionar Pedido</a>
+                <a href="atualizarStatus.php?numero=<?= $mesaSelecionada['numero']; ?>&status=Livre"
+                    class="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Finalizar Mesa</a>
+            </div>
+        <?php else: ?>
+            <p>Mesa não encontrada ou inválida.</p>
+        <?php endif; ?>
     </div>
-</body>
 
+    <script>
+        // Toggle menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const menu = document.getElementById('menu');
+        menuToggle.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
 </html>

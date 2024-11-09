@@ -8,17 +8,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
     $tipoConta = $_POST['tipo_conta'];
 
-    // Use prepared statement
-    $stmt = $conexao->prepare("INSERT INTO usuario (nome, email, senha, tipoConta) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $nome, $email, $senha, $tipoConta);
+    // Verificar se o email já está cadastrado
+    $stmt = $conexao->prepare("SELECT codUsuario FROM usuario WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($stmt->execute()) {
-        // Redirect to login page 
-        header("Location: login.php?success=1");
-        exit();
+    if ($result->num_rows > 0) {
+        // Email já está registrado
+        echo "<script>alert('Este email já está cadastrado. Por favor, use outro.');</script>";
     } else {
-        echo "Erro ao cadastrar: " . $stmt->error;
+        // Caso o email não exista, podemos inserir o novo usuário
+        $stmt = $conexao->prepare("INSERT INTO usuario (nome, email, senha, tipoConta) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $nome, $email, $senha, $tipoConta);
+
+        if ($stmt->execute()) {
+            // Redirecionar para a página de login após o cadastro
+            echo "<script>window.location.href = 'login.php?success=1';</script>";
+            exit();
+        } else {
+            echo "Erro ao cadastrar: " . $stmt->error;
+        }
     }
+
     $stmt->close();
     $conexao->close();
 }
@@ -26,15 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-orange-300 flex items-center justify-center h-screen">
     <div class="bg-black p-8 rounded-lg shadow-lg w-1/3">
         <h2 class="text-3xl text-white font-bold text-center mb-6">Cadastro</h2>
@@ -62,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="funcionario">Funcionário</option>
                     <option value="cozinha">Cozinha</option>
                 </select>
-
             </div>
             <div class="flex justify-center mt-4">
                 <button type="submit"
@@ -70,10 +78,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="flex justify-center">
                 <p class="text-white text-center">Já tem cadastro? <a href="login.php"
-                        class="text-orange-300 hover:underline">Entre</a></p>
+                        class="text-orange-300 hover:underline">Entre</a>
+                </p>
             </div>
         </form>
     </div>
 </body>
-
 </html>

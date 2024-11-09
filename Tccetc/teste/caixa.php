@@ -1,7 +1,15 @@
 <?php
-include 'data.php'; // Carrega as mesas e pedidos
+include 'data.php'; // Carrega as funções para acessar as mesas e pedidos
 session_start();
-if (!isset($_SESSION['nome']))
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario'])) {
+    header('Location: login.php'); // Redireciona para login se não estiver logado
+    exit();
+}
+
+// Carrega as mesas do banco
+$mesas = getMesas();
 ?>
 
 <!DOCTYPE html>
@@ -58,14 +66,14 @@ if (!isset($_SESSION['nome']))
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <?php foreach ($mesas as $mesa): ?>
                 <div class="bg-black shadow-md rounded-lg p-8 border-gray-200">
-                    <h2 class="text-xl text-white font-semibold">Mesa <?= $mesa["numero"] ?></h2>
+                    <h2 class="text-xl text-white font-semibold">Mesa <?= htmlspecialchars($mesa["numero"]) ?></h2>
 
                     <?php if (!empty($mesa["pedido"])): ?>
                         <div class="mt-4">
                             <h3 class="text-white font-semibold mb-2">Pedidos:</h3>
                             <ul class="list-disc pl-5">
                                 <?php foreach ($mesa["pedido"] as $pedido): ?>
-                                    <li><?= $pedido["quantidade"] ?>x <?= $pedido["item"] ?> -
+                                    <li><?= htmlspecialchars($pedido["quantidade"]) ?>x <?= htmlspecialchars($pedido["item"]) ?> -
                                         R$<?= number_format($pedido["preco"], 2, ',', '.') ?></li>
                                 <?php endforeach; ?>
                             </ul>
@@ -82,6 +90,15 @@ if (!isset($_SESSION['nome']))
             <?php endforeach; ?>
         </div>
     </div>
+
+    <script>
+        // Toggle menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const menu = document.getElementById('menu');
+        menuToggle.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 
 </html>
