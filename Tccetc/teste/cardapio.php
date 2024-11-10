@@ -170,7 +170,7 @@ if ($result && $result->num_rows > 0) {
       const productName = document.getElementById("productName").innerText;
       const quantity = document.getElementById("quantity").value;
 
-      if (!productName || quantity <= 0 || !Number.isInteger(quantity)) {
+      if (!productName || quantity <= 0) {
         alert("Selecione um produto válido e uma quantidade.");
         return;
       }
