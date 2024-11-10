@@ -35,7 +35,8 @@ $conexao->query("CREATE TABLE IF NOT EXISTS mesa (
     codMesa INT PRIMARY KEY AUTO_INCREMENT,
     statusMesa VARCHAR(50),
     comanda DECIMAL(10, 2),
-    nomeMesa VARCHAR(100) NOT NULL
+    nomeMesa VARCHAR(100) NOT NULL,
+    numero INT NOT NULL
 )");
 
 $conexao->query("CREATE TABLE IF NOT EXISTS funcionario (

@@ -46,9 +46,9 @@ $mesas = getMesas();
             <!-- Links da Navbar -->
             <div id="menu"
                 class="hidden w-full md:flex md:w-auto flex-col md:flex-row items-center md:space-x-4 mt-4 md:mt-0">
-                <a href="caixa.php"
-                    class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Caixa</a>
-                <a href="mesa.php"
+                <a href="#"
+                    class="text-orange-300 underline hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Caixa</a>
+                <a href="telaMesas.php"
                     class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Mesas</a>
                 <a href="produtos.php"
                     class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Produto</a>
@@ -66,7 +66,7 @@ $mesas = getMesas();
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <?php foreach ($mesas as $mesa): ?>
                 <div class="bg-black shadow-md rounded-lg p-8 border-gray-200">
-                    <h2 class="text-xl text-white font-semibold">Mesa <?= htmlspecialchars($mesa["numero"]) ?></h2>
+                    <h2 class="text-xl text-white font-semibold">Mesa <?= htmlspecialchars($mesa["numero"]); ?></h2>
 
                     <?php if (!empty($mesa["pedido"])): ?>
                         <div class="mt-4">

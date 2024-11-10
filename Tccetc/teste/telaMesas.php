@@ -10,18 +10,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Adicionar mesa apenas se não existir
         if ($_POST['action'] === 'add' && count(getmesa()) < $maxmesa) {
             // Verifica se já existem mesas
-            $result = $conexao->query("SELECT COUNT(*) as total FROM mesa");
+            $result = $conexao->query("SELECT MAX(numero) as max_numero FROM mesa");
             $row = $result->fetch_assoc();
+            $nextNumero = $row['max_numero'] ? $row['max_numero'] + 1 : 1;
+
             if ($row['total'] < $maxmesa) {
                 // Adicionando uma nova mesa
-                $stmt = $conexao->prepare("INSERT INTO mesa (nomeMesa, statusMesa) VALUES (?, ?)");
+                $stmt = $conexao->prepare("INSERT INTO mesa (nomeMesa, statusMesa, numero) VALUES (?, ?, ?)");
                 $newId = count(getmesa()) + 1;
-                $nomeMesa = str_pad($newId, 2, '0', STR_PAD_LEFT); // Gera nomeMesa como "01", "02", ...
+                $nomeMesa = "Mesa " . $nextNumero; // Gera nomeMesa como "01", "02", ...
                 $statusMesa = 'livre';
-                $stmt->bind_param("ss", $nomeMesa, $statusMesa);
+                $stmt->bind_param("ssi", $nomeMesa, $statusMesa, $nextNumero);
                 $stmt->execute();
                 $stmt->close();
                 $message = "Mesa adicionada com sucesso!";
+
+                // Redireciona para evitar reenvio do formulário
+                header("Location: telaMesas.php");
+                exit;
             }
         }
         // Excluir mesa
@@ -49,6 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
             $stmt->close();
             $message = "Status da mesa alterado!";
+
+            header("Location: telaMesas.php");
+            exit;
         }
     }
 }
@@ -79,7 +88,7 @@ $ocupadaMesas = getmesa('ocupada');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mesa</title>
+    <title>Mesas - TastyX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <style>
@@ -107,24 +116,44 @@ $ocupadaMesas = getmesa('ocupada');
 </head>
 
 <body class="bg-orange-300 flex flex-col h-screen">
+    <!--NAVBAR-->
     <nav class="bg-black border-gray-200">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
             <a class="flex items-center space-x-3">
                 <div class="rounded-full bg-orange-300 h-8 w-8"></div>
-                <span class="self-center text-2xl font-semibold text-white whitespace-nowrap">
-                    Olá, <?php echo $_SESSION['nome'] ?? 'Usuário desconhecido'; ?>
+                <span class="self-center text-xl md:text-2xl font-semibold text-white whitespace-nowrap">
+                    Olá,
+                    <?php echo isset($_SESSION['usuario']) ? $_SESSION['usuario']['nome'] : 'Usuário desconhecido'; ?>
                 </span>
             </a>
-            <div class="flex space-x-4">
-                <!-- Link para Caixa -->
-                <a href="/caixa.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Caixa</a>
-                <!-- Link para Mesas -->
-                <a href="/mesas.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Mesas</a>
-                <!-- Link para Produto -->
-                <a href="/produto.php" class="text-white hover:bg-orange-600 px-4 py-2 rounded-md">Produto</a>
+
+            <!-- Menu Burger -->
+            <button id="menu-toggle" class="block md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+
+            <!-- Links da Navbar -->
+            <div id="menu"
+                class="hidden w-full md:flex md:w-auto flex-col md:flex-row items-center md:space-x-4 mt-4 md:mt-0">
+                <a href="caixa.php"
+                    class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Caixa</a>
+                <a href="#"
+                    class="text-orange-300 underline hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Mesas</a>
+                <a href="produtos.php"
+                    class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Produto</a>
+
+                <!-- Botão de Logout -->
+                <a href="../logout.php" class="text-white bg-red-600 hover:bg-red-700 px-3 md:px-4 py-2 rounded-md">
+                    Sair
+                </a>
             </div>
         </div>
     </nav>
+
 
     <!-- Área Principal -->
     <div class="container mx-auto p-6 flex">
