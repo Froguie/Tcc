@@ -113,6 +113,24 @@ if ($result && $result->num_rows > 0) {
   </div>
 
   <script>
+    function showTab(tab) {
+      // Esconde todas as seções de produtos
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach((tabContent) => {
+        tabContent.style.display = 'none';
+      });
+
+      // Exibe a seção de produtos selecionada
+      const selectedTab = document.getElementById(tab);
+      if (selectedTab) {
+        selectedTab.style.display = 'block';
+      }
+    }
+
+    // Exemplo de chamar showTab para "todos os produtos"
+    showTab('todos');
+
+
     let cart = [];
 
     function showProductDetails(produto) {
@@ -152,7 +170,7 @@ if ($result && $result->num_rows > 0) {
       const productName = document.getElementById("productName").innerText;
       const quantity = document.getElementById("quantity").value;
 
-      if (!productName || quantity <= 0) {
+      if (!productName || quantity <= 0 || !Number.isInteger(quantity)) {
         alert("Selecione um produto válido e uma quantidade.");
         return;
       }
