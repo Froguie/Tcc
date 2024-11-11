@@ -1,4 +1,5 @@
 <?php
+include("../backend/conexao.php");
 $numeroMesa = $_POST['numero_mesa'];
 $item = $_POST['item'];
 $quantidade = $_POST['quantidade'];
@@ -6,7 +7,7 @@ $preco = $_POST['preco'];
 
 // verificando se os dados do produto (item) existem ou n
 $sqlProduto = "SELECT codProduto FROM produto WHERE nomeProduto = ?";
-$stmt = $conn->prepare($sqlProduto);
+$stmt = $conexao->prepare($sqlProduto);
 $stmt->bind_param("s", $item);
 $stmt->execute();
 $stmt->bind_result($codProduto);
@@ -19,7 +20,7 @@ if ($codProduto) {
     $observacaoPedido = "Pedido de $quantidade x $item";
 
     //inserindo
-    $stmtPedido = $conn->prepare($sqlPedido);
+    $stmtPedido = $conexao->prepare($sqlPedido);
     $stmtPedido->bind_param("iss", $numeroMesa, $observacaoPedido, $statusPedido);
     $stmtPedido->execute();
     
@@ -28,7 +29,7 @@ if ($codProduto) {
     
     // inserindo o item do pedido na tabela 'produtoPedido'
     $sqlProdutoPedido = "INSERT INTO produtoPedido (codProduto, codPedido, quantidade) VALUES (?, ?, ?)";
-    $stmtProdutoPedido = $conn->prepare($sqlProdutoPedido);
+    $stmtProdutoPedido = $conexao->prepare($sqlProdutoPedido);
     $stmtProdutoPedido->bind_param("iii", $codProduto, $codPedido, $quantidade);
     $stmtProdutoPedido->execute();
 
