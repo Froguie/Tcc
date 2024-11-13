@@ -69,18 +69,22 @@ if ($result && $result->num_rows > 0) {
   <div class="ml-64 p-8">
     <h3 class="text-3xl font-semibold mb-8 text-orange-700">Todos os Produtos</h3>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-      <?php foreach ($todosProdutos as $produto): ?>
-        <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer"
-          onclick="addToCart('<?php echo $produto['nomeProduto']; ?>', <?php echo $produto['precoProduto']; ?>)">
-          <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
-            <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
-              class="w-full h-full object-cover">
-          </div>
-          <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
-          <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
-        </div>
-      <?php endforeach; ?>
+  <?php foreach ($todosProdutos as $produto): ?>
+    <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer"
+         onclick="showProductDetails({
+           nomeProduto: '<?php echo $produto['nomeProduto']; ?>',
+           precoProduto: <?php echo $produto['precoProduto']; ?>,
+           imagemProduto: '<?php echo base64_encode($produto['imagemProduto']); ?>'
+         })">
+      <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+        <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
+             class="w-full h-full object-cover">
+      </div>
+      <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+      <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
     </div>
+  <?php endforeach; ?>
+</div>
   </div>
   <!-- Sidebar de Detalhes do Produto -->
   <div id="productSidebar"
@@ -134,19 +138,19 @@ if ($result && $result->num_rows > 0) {
     let cart = [];
 
     function showProductDetails(produto) {
-      if (!produto || !produto.nomeProduto || !produto.imagemProduto) {
-        console.error("Produto inválido.");
-        return;
-      }
+  if (!produto || !produto.nomeProduto || !produto.imagemProduto) {
+    alert("Erro: Produto inválido.");
+    return;
+  }
 
-      document.getElementById("productName").innerText = produto.nomeProduto;
-      document.getElementById("productImgSrc").src = "data:image/jpeg;base64," + produto.imagemProduto;
-      document.getElementById("productPrice").innerText = "R$ " + parseFloat(produto.precoProduto).toFixed(2).replace('.', ',');
+  document.getElementById("productName").innerText = produto.nomeProduto;
+  document.getElementById("productImgSrc").src = "data:image/jpeg;base64," + produto.imagemProduto;
+  document.getElementById("productPrice").innerText = "R$ " + produto.precoProduto.toFixed(2).replace('.', ',');
 
-      const sidebar = document.getElementById("productSidebar");
-      sidebar.classList.remove("translate-x-full");
-      sidebar.classList.add("translate-x-0");
-    }
+  const sidebar = document.getElementById("productSidebar");
+  sidebar.classList.remove("translate-x-full");
+  sidebar.classList.add("translate-x-0");
+}
 
     function hideProductSidebar() {
       const sidebar = document.getElementById("productSidebar");
@@ -167,47 +171,32 @@ if ($result && $result->num_rows > 0) {
     }
 
     function addToCart() {
-      const productName = document.getElementById("productName").innerText;
-      const quantity = document.getElementById("quantity").value;
+  const productName = document.getElementById("productName").innerText;
+  const productPrice = document.getElementById("productPrice").innerText.replace("R$ ", "").replace(",", ".");
+  const quantity = parseInt(document.getElementById("quantity").value);
 
-      if (!productName || quantity <= 0) {
-        alert("Selecione um produto válido e uma quantidade.");
-        return;
-      }
+  if (!productName || isNaN(quantity) || quantity <= 0) {
+    alert("Selecione um produto válido e uma quantidade maior que 0.");
+    return;
+  }
 
-      function showTab(tab) {
-        // Esconde todas as seções de produtos
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach((tabContent) => {
-          tabContent.style.display = 'none';
-        });
+  const product = {
+    name: productName,
+    price: parseFloat(productPrice),
+    quantity: quantity,
+  };
 
-        // Exibe a seção de produtos selecionada
-        const selectedTab = document.getElementById(tab);
-        if (selectedTab) {
-          selectedTab.style.display = 'block';
-        }
-      }
+  cart.push(product);
+  toggleCart(); // Atualizar o badge do carrinho
 
-      // Definir a tab inicial
-      showTab('todos');
+  // Exibir popup de confirmação
+  const popup = document.getElementById("popup");
+  popup.classList.remove("hidden");
+  setTimeout(() => {
+    popup.classList.add("hidden");
+  }, 3000);
+}
 
-
-      // Adicionar o produto ao carrinho
-      const product = {
-        name: productName,
-        quantity: parseInt(quantity),
-      };
-      cart.push(product);
-      toggleCart(); // Atualizar badge com quantidade
-
-      // Exibir popup temporário
-      const popup = document.getElementById("popup");
-      popup.classList.remove("hidden");
-      setTimeout(() => {
-        popup.classList.add("hidden");
-      }, 3000); // Esconder após 3 segundos
-    }
 
     function finalizarPedido() {
       if (cart.length === 0) {
