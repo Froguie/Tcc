@@ -69,23 +69,21 @@ if ($result && $result->num_rows > 0) {
   <div class="ml-64 p-8">
     <h3 class="text-3xl font-semibold mb-8 text-orange-700">Todos os Produtos</h3>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-  <?php foreach ($todosProdutos as $produto): ?>
-    <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer"
-         onclick="showProductDetails({
-           nomeProduto: '<?php echo $produto['nomeProduto']; ?>',
-           precoProduto: <?php echo $produto['precoProduto']; ?>,
-           imagemProduto: '<?php echo base64_encode($produto['imagemProduto']); ?>'
-         })">
-      <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
-        <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
-             class="w-full h-full object-cover">
-      </div>
-      <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
-      <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+        <?php foreach ($todosProdutos as $produto): ?>
+            <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+                <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+                    <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+                        <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+                    <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+                </div>
+            </a>
+        <?php endforeach; ?>
     </div>
-  <?php endforeach; ?>
 </div>
-  </div>
+
   <!-- Sidebar de Detalhes do Produto -->
   <div id="productSidebar"
     class="fixed top-0 right-0 h-full w-80 bg-white p-6 shadow-lg transform translate-x-full transition-transform duration-300">

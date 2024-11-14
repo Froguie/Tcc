@@ -9,10 +9,10 @@ if (!isset($_GET['id'])) {
 }
 
 // Obter os detalhes do produto com base no ID
-$idProduto = $_GET['id'];
-$sql = "SELECT * FROM produto WHERE idProduto = ?";
+$codProduto = $_GET['id'];
+$sql = "SELECT * FROM produto WHERE codProduto = ?";
 $stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $idProduto);
+$stmt->bind_param("i", $codProduto);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -36,7 +36,7 @@ $produto = $result->fetch_assoc();
 
   <!-- Sidebar -->
   <div class="flex min-h-screen">
-    <div class="bg-black text-white w-1/4 p-6 flex flex-col justify-between fixed h-full">
+    <div class="bg-black text-white w-1/4 p-6 flex flex-col justify-between h-screen">
       <div>
         <button class="text-3xl font-bold mb-4">&times;</button>
         <h1 class="text-2xl font-semibold">Brother's Burger</h1>
@@ -51,7 +51,7 @@ $produto = $result->fetch_assoc();
     </div>
 
     <!-- Detalhes do Produto -->
-    <div class="ml-64 p-10 bg-orange-400 w-3/4">
+    <div class="mx-auto p-10 bg-orange-400 w-3/4">
       <a href="cardapio.php" class="text-sm font-semibold text-black mb-4 inline-block">Voltar</a>
       <h2 class="text-3xl font-bold text-black mb-4"><?php echo htmlspecialchars($produto['nomeProduto']); ?></h2>
 
