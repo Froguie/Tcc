@@ -67,21 +67,71 @@ if ($result && $result->num_rows > 0) {
 
   <!-- Seções de Produtos por Categoria -->
   <div class="ml-64 p-8">
-    <h3 class="text-3xl font-semibold mb-8 text-orange-700">Todos os Produtos</h3>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-        <?php foreach ($todosProdutos as $produto): ?>
-            <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
-                <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
-                    <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
-                        <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
-                             class="w-full h-full object-cover">
-                    </div>
-                    <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
-                    <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
-                </div>
-            </a>
-        <?php endforeach; ?>
-    </div>
+  <!-- Exibição padrão, todos os produtos -->
+  <h3 class="text-3xl font-semibold mb-8 text-orange-700">Todos os Produtos</h3>
+  <div id="todos" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <?php foreach ($todosProdutos as $produto): ?>
+          <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+              <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+                  <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+                      <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover">
+                  </div>
+                  <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+                  <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+              </div>
+          </a>
+      <?php endforeach; ?>
+  </div>
+
+  <!-- Seção Pratos -->
+  <h3 class="text-3xl font-semibold mb-8 text-orange-700">Pratos</h3>
+  <div id="pratos" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
+      <?php foreach ($pratos as $produto): ?>
+          <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+              <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+                  <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+                      <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover">
+                  </div>
+                  <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+                  <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+              </div>
+          </a>
+      <?php endforeach; ?>
+  </div>
+
+  <!-- Seção Sobremesas -->
+  <h3 class="text-3xl font-semibold mb-8 text-orange-700">Sobremesas</h3>
+  <div id="sobremesas" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
+      <?php foreach ($sobremesas as $produto): ?>
+          <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+              <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+                  <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+                      <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover">
+                  </div>
+                  <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+                  <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+              </div>
+          </a>
+      <?php endforeach; ?>
+  </div>
+
+  <!-- Seção Bebidas -->
+  <h3 class="text-3xl font-semibold mb-8 text-orange-700">Bebidas</h3>
+  <div id="bebidas" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
+      <?php foreach ($bebidas as $produto): ?>
+          <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+              <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+                  <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
+                      <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover">
+                  </div>
+                  <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+                  <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
+              </div>
+          </a>
+      <?php endforeach; ?>
+  </div>
+</div>
+
 </div>
 
   <!-- Sidebar de Detalhes do Produto -->
@@ -116,18 +166,19 @@ if ($result && $result->num_rows > 0) {
 
   <script>
     function showTab(tab) {
-      // Esconde todas as seções de produtos
-      const tabs = document.querySelectorAll('.tab-content');
-      tabs.forEach((tabContent) => {
-        tabContent.style.display = 'none';
-      });
+  // Oculta todas as seções de produtos
+  const tabs = document.querySelectorAll('.tab-content');
+  tabs.forEach((tabContent) => {
+    tabContent.classList.add('hidden');
+  });
 
-      // Exibe a seção de produtos selecionada
-      const selectedTab = document.getElementById(tab);
-      if (selectedTab) {
-        selectedTab.style.display = 'block';
-      }
-    }
+  // Exibe a seção da categoria selecionada
+  const selectedTab = document.getElementById(tab);
+  if (selectedTab) {
+    selectedTab.classList.remove('hidden');
+  }
+}
+
 
     // Exemplo de chamar showTab para "todos os produtos"
     showTab('todos');
