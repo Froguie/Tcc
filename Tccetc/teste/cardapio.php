@@ -2,6 +2,33 @@
 include("../backend/conexao.php");
 session_start();
 
+// Consulta as mesas disponíveis no banco de dados
+$mesas = [];
+$result = $conexao->query("SELECT numero FROM mesa WHERE statusMesa = 'livre' ORDER BY numero ASC");
+if ($result && $result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $mesas[] = $row['numero'];
+  }
+}
+
+// Captura o número da mesa selecionada
+if (isset($_POST['mesaSelecionada'])) {
+  $_SESSION['mesaSelecionada'] = $_POST['mesaSelecionada'];
+}
+
+// Exibir um alerta se a mesa não foi selecionada
+if (!isset($_SESSION['mesaSelecionada'])) {
+  echo "<p class='text-center text-red-500'>Por favor, selecione a mesa antes de fazer o pedido.</p>";
+} else {
+  echo "<p class='text-center text-red-500'></p>";
+}
+
+// Verifique se uma mesa foi selecionada no formulário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mesaSelecionada'])) {
+  $_SESSION['mesaSelecionada'] = $_POST['mesaSelecionada'];
+}
+
+
 // Obter produtos por categoria
 $sql = "SELECT * FROM produto WHERE categoriaProduto IN ('Prato', 'Sobremesa', 'Bebida')";
 $result = $conexao->query($sql);
@@ -49,7 +76,17 @@ if ($result && $result->num_rows > 0) {
     <div class="flex justify-between items-center mb-4">
       <button class="text-3xl text-white hover:text-gray-400">
         &nbsp;
-      </button><span class="text-gray-400">Mesa 0</span>
+        <div class="flex justify-between items-center mb-4">
+  <select id="mesaSelect" name="mesaSelecionada" class="text-black bg-white rounded-md px-2 py-1">
+    <option value="">Selecione a Mesa</option>
+    <?php foreach ($mesas as $numeroMesa): ?>
+      <option value="<?php echo $numeroMesa; ?>">Mesa <?php echo $numeroMesa; ?></option>
+    <?php endforeach; ?>
+  </select>
+</div>
+
+
+
     </div>
     <h2 class="text-2xl font-bold mb-8 text-center">Brother's Burger</h2>
     <ul class="space-y-4 text-lg">

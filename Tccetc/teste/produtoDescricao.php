@@ -2,11 +2,29 @@
 include("../backend/conexao.php");
 session_start();
 
-// Verificar se o ID do produto foi passado
-if (!isset($_GET['id'])) {
-  echo "Produto não encontrado.";
-  exit;
+$mesaSelecionada = "Nenhuma mesa selecionada"; // Mensagem padrão
+
+// Verificar se há uma mesa selecionada na sessão
+if (isset($_SESSION['mesaSelecionada'])) {
+    // Pegar o número ou ID da mesa da sessão
+    $numeroMesa = $_SESSION['mesaSelecionada'];
+    
+    // Buscar o nome da mesa no banco de dados
+    $sql = "SELECT nomeMesa FROM mesa WHERE numero = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $numeroMesa);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $mesaSelecionada = $row['nomeMesa'];
+    } else {
+        $mesaSelecionada = "Mesa não encontrada";
+    }
+    $stmt->close();
 }
+
 
 // Obter os detalhes do produto com base no ID
 $codProduto = $_GET['id'];
@@ -40,7 +58,12 @@ $produto = $result->fetch_assoc();
       <div>
         <button class="text-3xl font-bold mb-4">&times;</button>
         <h1 class="text-2xl font-semibold">Brother's Burger</h1>
-        <p class="text-gray-400 mt-2">Mesa 0</p>
+        <div class="flex justify-between items-center mb-4">
+  <p class="text-lg font-semibold text-gray-800">
+    Mesa Selecionada: <?php echo $mesaSelecionada; ?>
+  </p>
+</div>
+
         <nav class="mt-8 space-y-4">
           <a href="cardapio.php?categoria=Prato" class="block text-gray-300 hover:text-white">Pratos</a>
           <a href="cardapio.php?categoria=Sobremesa" class="block text-gray-300 hover:text-white">Sobremesas</a>
