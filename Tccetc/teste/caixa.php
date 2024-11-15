@@ -12,13 +12,38 @@ if (!isset($_SESSION['usuario'])) {
 $mesas = getMesas();
 
 // Função para calcular o valor total de um pedido
-function calcularTotalPedido($pedido) {
+function calcularTotalPedido($pedido)
+{
     $total = 0;
     foreach ($pedido as $item) {
-        $total += $item["quantidade"] * $item["preco"];
+        // Verifica se as chaves existem antes de usá-las no cálculo
+        $quantidade = isset($item["quantidade"]) ? $item["quantidade"] : 0;
+        $preco = isset($item["preco"]) ? $item["preco"] : 0;
+        $total += $quantidade * $preco;
     }
     return $total;
 }
+
+
+// Função para pegar pedidos de uma mesa específica
+function getPedidosPorMesa($numeroMesa)
+{
+    global $conexao;
+    $sql = "SELECT p.nomeProduto, p.precoProduto, pe.quantidade
+            FROM pedido pe
+            JOIN produto p ON pe.codProPe = p.codProduto
+            WHERE pe.numeroMesa = ? AND pe.statusPedido = 'aberto'";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $numeroMesa);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $pedidos = [];
+    while ($row = $result->fetch_assoc()) {
+        $pedidos[] = $row;
+    }
+    return $pedidos;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -47,7 +72,8 @@ function calcularTotalPedido($pedido) {
             <button id="menu-toggle" class="block md:hidden text-white focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
                 </svg>
             </button>
 
@@ -76,14 +102,25 @@ function calcularTotalPedido($pedido) {
                 <div class="bg-black shadow-md rounded-lg p-8 border-gray-200">
                     <h2 class="text-xl text-white font-semibold">Mesa <?= htmlspecialchars($mesa["numero"]); ?></h2>
 
+                    <?php
+                    // Verifica se o status existe para evitar erros
+                    $statusMesa = isset($mesa["status"]) ? $mesa["status"] : "Indefinido";
+                    ?>
+                    <p class="text-green-600 transition duration-300 ease-in-out">Status:
+                        <?= htmlspecialchars($statusMesa); ?>
+                    </p>
+
                     <?php if (!empty($mesa["pedido"])): ?>
                         <div class="mt-4">
                             <h3 class="text-white font-semibold mb-2">Pedidos:</h3>
                             <ul class="list-disc pl-5">
                                 <?php
-                                    $totalMesa = calcularTotalPedido($mesa["pedido"]); // Calcula o total
-                                    foreach ($mesa["pedido"] as $pedido): ?>
-                                        <li><?= htmlspecialchars($pedido["quantidade"]) ?>x <?= htmlspecialchars($pedido["item"]) ?> - R$<?= number_format($pedido["preco"], 2, ',', '.') ?></li>
+                                $totalMesa = calcularTotalPedido($mesa["pedido"]); // Calcula o total
+                                foreach ($mesa["pedido"] as $pedido): ?>
+                                    <li class="text-white"><?= htmlspecialchars($pedido["quantidade"]) ?>x
+                                        <?= htmlspecialchars($pedido["item"]) ?> -
+                                        R$<?= number_format($pedido["preco"], 2, ',', '.') ?>
+                                    </li>
                                 <?php endforeach; ?>
                             </ul>
                             <p class="text-white font-bold mt-2">Total: R$<?= number_format($totalMesa, 2, ',', '.') ?></p>
@@ -98,6 +135,7 @@ function calcularTotalPedido($pedido) {
                     </div>
                 </div>
             <?php endforeach; ?>
+
         </div>
     </div>
 

@@ -5,39 +5,40 @@ include("../backend/conexao.php");
 function getMesas()
 {
     global $conexao;
-
-    // Busca todas as mesas
-    $queryMesas = "SELECT * FROM mesa";
+    $mesas = [];
+    $queryMesas = "SELECT numero, statusMesa FROM mesa ORDER BY numero ASC";
     $resultMesas = $conexao->query($queryMesas);
 
-    $mesas = [];
+    if ($resultMesas && $resultMesas->num_rows > 0) {
+        while ($mesa = $resultMesas->fetch_assoc()) {
+            $numeroMesa = $mesa['numero'];
 
-    while ($mesa = $resultMesas->fetch_assoc()) {
-        // Para cada mesa, busca seus pedidos
-        $queryPedidos = "SELECT p.quantidade, pr.nomeProduto as item, pr.precoProduto as preco 
-                         FROM pedido p
-                         JOIN produto pr ON p.codProPe = pr.codProduto
-                         WHERE p.codMesa = ?";
+            // Consulta para pegar os pedidos dessa mesa
+            $queryPedidos = "
+                SELECT p.nomeProduto AS item, p.precoProduto AS preco, pd.quantidade 
+                FROM pedido pd
+                INNER JOIN produto p ON pd.codProPe = p.codProduto
+                WHERE pd.numeroMesa = $numeroMesa AND pd.statusPedido = 'aberto'
+            ";
+            $resultPedidos = $conexao->query($queryPedidos);
 
-        $stmt = $conexao->prepare($queryPedidos);
-        $stmt->bind_param("i", $mesa['codMesa']); 
-        $stmt->execute();
-        $resultPedidos = $stmt->get_result();
-        $pedidos = [];
+            $pedidoMesa = [];
+            if ($resultPedidos && $resultPedidos->num_rows > 0) {
+                while ($pedido = $resultPedidos->fetch_assoc()) {
+                    $pedidoMesa[] = [
+                        "item" => $pedido['item'],
+                        "preco" => $pedido['preco'],
+                        "quantidade" => $pedido['quantidade']
+                    ];
+                }
+            }
 
-        while ($pedido = $resultPedidos->fetch_assoc()) {
-            $pedidos[] = $pedido;
+            $mesas[] = [
+                "numero" => $numeroMesa,
+                "pedido" => $pedidoMesa
+            ];
         }
-
-        // Adiciona os pedidos à mesa e usa o numero da mesa no array $mesas
-        $mesas[] = [
-            'numero' => $mesa['numero'], // Número da mesa
-            'nome' => $mesa['nomeMesa'], // Nome da mesa
-            'status' => $mesa['statusMesa'], // Status da mesa
-            'pedido' => $pedidos // Pedidos da mesa
-        ];
     }
-
     return $mesas;
 }
 
@@ -80,5 +81,7 @@ function getProdutos()
 
     return $produtos; // Retorna o array com os produtos
 }
+
+
 
 ?>

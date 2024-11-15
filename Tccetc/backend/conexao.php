@@ -67,6 +67,7 @@ $conexao->query("CREATE TABLE IF NOT EXISTS pedido (
     codPedido INT PRIMARY KEY AUTO_INCREMENT,
     codProPe INT,
     codMesa INT,
+    numeroMesa INT,
     observacaoPedido TEXT,
     statusPedido VARCHAR(50),
     horarioPedido TIME,

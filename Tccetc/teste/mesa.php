@@ -35,6 +35,7 @@ if (!$mesaSelecionada) {
     <title>Gerenciar Mesa <?= htmlspecialchars($mesaSelecionada["numero"] ?? 'Indefinido'); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-orange-300">
     <!--NAVBAR-->
     <nav class="bg-black border-gray-200">
@@ -77,11 +78,13 @@ if (!$mesaSelecionada) {
     <div class="container mx-auto p-4">
         <?php if ($mesaSelecionada): ?>
             <h1 class="text-3xl font-bold">Mesas <?= htmlspecialchars($mesaSelecionada["numero"]); ?></h1>
-            <p>Status: 
-                <span class="<?= $mesaSelecionada["status"] == 'Ocupada' ? 'text-red-600' : 'text-green-600' ?> transition duration-300 ease-in-out">
-                    <?= htmlspecialchars($mesaSelecionada["status"]); ?>
+            <p>Status:
+                <span
+                    class="<?= isset($mesaSelecionada["status"]) && $mesaSelecionada["status"] == 'Ocupada' ? 'text-red-600' : 'text-green-600' ?> transition duration-300 ease-in-out">
+                    <?= isset($mesaSelecionada["status"]) ? htmlspecialchars($mesaSelecionada["status"]) : "Indefinido"; ?>
                 </span>
             </p>
+
 
             <div class="mt-4">
                 <h2 class="font-semibold">Pedidos:</h2>
@@ -102,9 +105,11 @@ if (!$mesaSelecionada) {
 
             <div class="mt-6">
                 <a href="adicionarPedido.php?numero=<?= $mesaSelecionada['numero']; ?>"
-                    class="bg-black hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Adicionar Pedido</a>
+                    class="bg-black hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Adicionar
+                    Pedido</a>
                 <a href="atualizarStatus.php?numero=<?= $mesaSelecionada['numero']; ?>&status=Livre"
-                    class="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Finalizar Mesa</a>
+                    class="bg-black hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out">Finalizar
+                    Mesa</a>
             </div>
         <?php else: ?>
             <p>Mesa não encontrada ou inválida.</p>
@@ -120,4 +125,5 @@ if (!$mesaSelecionada) {
         });
     </script>
 </body>
+
 </html>

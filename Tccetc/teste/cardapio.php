@@ -65,7 +65,7 @@ if (isset($_GET['adicionar_produto'])) {
   // Verifica se a mesa foi selecionada
   if (isset($mesaSelecionada) && !empty($mesaSelecionada)) {
     // Adiciona o pedido no banco
-    $sqlPedido = "INSERT INTO pedido (codProduto, numeroMesa, statusPedido) VALUES (?, ?, 'aberto')";
+    $sqlPedido = "INSERT INTO pedido (codProPe, numeroMesa, statusPedido) VALUES (?, ?, 'aberto')";
     $stmt = $conexao->prepare($sqlPedido);
     $stmt->bind_param("ii", $produtoId, $mesaSelecionada);
     $stmt->execute();
@@ -75,6 +75,25 @@ if (isset($_GET['adicionar_produto'])) {
   header("Location: " . $_SERVER['PHP_SELF']);
   exit;
 }
+
+// Função para pegar pedidos de uma mesa específica
+function getPedidosPorMesa($numeroMesa) {
+  global $conexao;
+  $sql = "SELECT p.nomeProduto, p.precoProduto, pe.quantidade
+          FROM pedido pe
+          JOIN produto p ON pe.codProPe = p.codProduto
+          WHERE pe.numeroMesa = ? AND pe.statusPedido = 'aberto'";
+  $stmt = $conexao->prepare($sql);
+  $stmt->bind_param("i", $numeroMesa);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $pedidos = [];
+  while ($row = $result->fetch_assoc()) {
+      $pedidos[] = $row;
+  }
+  return $pedidos;
+}
+
 ?>
 
 <!DOCTYPE html>
