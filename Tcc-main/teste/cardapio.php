@@ -1,4 +1,12 @@
-<!-- index.php -->
+<?php
+// index.php
+include("backend/conexao.php");
+
+// Consultar os itens do cardápio no banco de dados
+$sql = "SELECT nome, preco FROM Cardapio"; // Ajuste a tabela e colunas de acordo com seu banco de dados
+$result = $conexao->query($sql);
+$cardapio = $result->fetch_all(MYSQLI_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -13,25 +21,13 @@
         
         <!-- Lista de Itens do Cardápio -->
         <form action="pedido.php" method="POST" class="space-y-4">
-            <?php
-            // Simulando dados do cardápio - você pode substituir por consulta ao banco de dados
-            $cardapio = [
-                ['nome' => 'Pizza Margherita', 'preco' => 35.00],
-                ['nome' => 'Lasanha', 'preco' => 45.00],
-                ['nome' => 'Suco de Laranja', 'preco' => 8.00],
-                ['nome' => 'Café', 'preco' => 5.00],
-            ];
-
-            foreach ($cardapio as $item) {
-                echo "
-                <div class='flex justify-between items-center border-b pb-2'>
-                    <span class='font-medium'>{$item['nome']}</span>
-                    <span class='text-gray-500'>R$ {$item['preco']}</span>
-                    <input type='checkbox' name='pedido[]' value='{$item['nome']}' class='ml-2'>
+            <?php foreach ($cardapio as $item): ?>
+                <div class="flex justify-between items-center border-b pb-2">
+                    <span class="font-medium"><?= htmlspecialchars($item['nome']) ?></span>
+                    <span class="text-gray-500">R$ <?= number_format($item['preco'], 2, ',', '.') ?></span>
+                    <input type="checkbox" name="pedido[]" value="<?= htmlspecialchars($item['nome']) ?>" class="ml-2">
                 </div>
-                ";
-            }
-            ?>
+            <?php endforeach; ?>
 
             <!-- Botão de Enviar Pedido -->
             <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-bold">

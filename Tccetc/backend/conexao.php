@@ -25,6 +25,25 @@ $conexao->query("CREATE TABLE IF NOT EXISTS produto (
     imagemProduto MEDIUMBLOB
 )");
 
+$conexao->query("CREATE TABLE IF NOT EXISTS pedidosfinal (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+$conexao->query("CREATE TABLE IF NOT EXISTS itenspedidosfinal (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    nomeProduto VARCHAR(100) NOT NULL,
+    precoProduto DECIMAL(10, 2) NOT NULL,
+    quantidade INT NOT NULL,
+    FOREIGN KEY (pedido_id) REFERENCES pedidosfinal(id)
+)");
+
 $conexao->query("CREATE TABLE IF NOT EXISTS adicional (
     codAdicional INT PRIMARY KEY AUTO_INCREMENT,
     nomeAdicional VARCHAR(100) NOT NULL,

@@ -10,6 +10,15 @@ if (!isset($_SESSION['usuario'])) {
 
 // Carrega as mesas do banco
 $mesas = getMesas();
+
+// Função para calcular o valor total de um pedido
+function calcularTotalPedido($pedido) {
+    $total = 0;
+    foreach ($pedido as $item) {
+        $total += $item["quantidade"] * $item["preco"];
+    }
+    return $total;
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,8 +47,7 @@ $mesas = getMesas();
             <button id="menu-toggle" class="block md:hidden text-white focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
-                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
 
@@ -54,7 +62,7 @@ $mesas = getMesas();
                     class="text-white hover:text-black hover:underline transition hover:bg-orange-300 px-3 md:px-4 py-2 rounded-md">Produto</a>
 
                 <!-- Botão de Logout -->
-                <a href="logout.php" class="text-white bg-red-600 hover:bg-red-700 px-3 md:px-4 py-2 rounded-md">
+                <a href="../logout.php" class="text-white bg-red-600 hover:bg-red-700 px-3 md:px-4 py-2 rounded-md">
                     Sair
                 </a>
             </div>
@@ -72,11 +80,13 @@ $mesas = getMesas();
                         <div class="mt-4">
                             <h3 class="text-white font-semibold mb-2">Pedidos:</h3>
                             <ul class="list-disc pl-5">
-                                <?php foreach ($mesa["pedido"] as $pedido): ?>
-                                    <li><?= htmlspecialchars($pedido["quantidade"]) ?>x <?= htmlspecialchars($pedido["item"]) ?> -
-                                        R$<?= number_format($pedido["preco"], 2, ',', '.') ?></li>
+                                <?php
+                                    $totalMesa = calcularTotalPedido($mesa["pedido"]); // Calcula o total
+                                    foreach ($mesa["pedido"] as $pedido): ?>
+                                        <li><?= htmlspecialchars($pedido["quantidade"]) ?>x <?= htmlspecialchars($pedido["item"]) ?> - R$<?= number_format($pedido["preco"], 2, ',', '.') ?></li>
                                 <?php endforeach; ?>
                             </ul>
+                            <p class="text-white font-bold mt-2">Total: R$<?= number_format($totalMesa, 2, ',', '.') ?></p>
                         </div>
                     <?php else: ?>
                         <p class="text-white text-sm mt-4">Nenhum pedido registrado.</p>

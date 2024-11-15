@@ -20,8 +20,7 @@ $conexao->query("CREATE TABLE IF NOT EXISTS Produto (
     codProduto INT PRIMARY KEY AUTO_INCREMENT,
     nomeProduto VARCHAR(100) NOT NULL,
     descricaoProduto TEXT,
-    precoProduto DECIMAL(10, 2) NOT NULL,
-    quantidaade INT
+    precoProduto DECIMAL(10, 2) NOT NULL
 )");
 
 $conexao->query("CREATE TABLE IF NOT EXISTS Adicional (
@@ -51,7 +50,7 @@ $conexao->query("CREATE TABLE IF NOT EXISTS Pedido (
     codProPe INT,
     codMesa INT,
     observacaoPedido TEXT,
-    quantidaade INT,
+    quantidade INT,
     statusPedido VARCHAR(50),
     horarioPedido TIME,
     codAdicional INT,
