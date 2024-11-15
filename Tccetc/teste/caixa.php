@@ -15,16 +15,18 @@ $mesas = getMesas();
 function calcularTotalPedido($pedido)
 {
     $total = 0;
+    $quantidadeProdutos = 0;
     foreach ($pedido as $item) {
         // Verifica se as chaves existem antes de usá-las no cálculo
         $quantidade = isset($item["quantidade"]) ? $item["quantidade"] : 0;
-        $preco = isset($item["preco"]) ? $item["preco"] : 0;
+        $preco = isset($item["precoProduto"]) ? $item["precoProduto"] : 0; // Corrigido para precoProduto
         $total += $quantidade * $preco;
+        $quantidadeProdutos += $quantidade; // Soma a quantidade total de produtos
     }
-    return $total;
+    return [$total, $quantidadeProdutos]; // Retorna o total e a quantidade de produtos
 }
 
-
+// Função para pegar pedidos de uma mesa específica
 // Função para pegar pedidos de uma mesa específica
 function getPedidosPorMesa($numeroMesa)
 {
@@ -41,8 +43,15 @@ function getPedidosPorMesa($numeroMesa)
     while ($row = $result->fetch_assoc()) {
         $pedidos[] = $row;
     }
+
+    // Verifique o conteúdo retornado
+    echo '<pre>';
+    print_r($pedidos);
+    echo '</pre>';
+
     return $pedidos;
 }
+
 
 ?>
 
@@ -115,14 +124,17 @@ function getPedidosPorMesa($numeroMesa)
                             <h3 class="text-white font-semibold mb-2">Pedidos:</h3>
                             <ul class="list-disc pl-5">
                                 <?php
-                                $totalMesa = calcularTotalPedido($mesa["pedido"]); // Calcula o total
+                                list($totalMesa, $totalProdutos) = calcularTotalPedido($mesa["pedido"]); // Calcula o total e a quantidade de produtos
                                 foreach ($mesa["pedido"] as $pedido): ?>
-                                    <li class="text-white"><?= htmlspecialchars($pedido["quantidade"]) ?>x
-                                        <?= htmlspecialchars($pedido["item"]) ?> -
-                                        R$<?= number_format($pedido["preco"], 2, ',', '.') ?>
+                                    <li class="text-white"><?= htmlspecialchars($pedido["quantidade"]) ?>
+                                        <?= htmlspecialchars($pedido["nomeProduto"]) ?> -
+                                        <!-- Corrigido de item para nomeProduto -->
+                                        R$<?= number_format($pedido["precoProduto"], 2, ',', '.') ?>
+                                        <!-- Corrigido para precoProduto -->
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+                            <p class="text-white font-bold mt-2">Total de produtos: <?= $totalProdutos ?></p>
                             <p class="text-white font-bold mt-2">Total: R$<?= number_format($totalMesa, 2, ',', '.') ?></p>
                         </div>
                     <?php else: ?>
