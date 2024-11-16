@@ -4,7 +4,7 @@ session_start();
 
 // Consulta as mesas disponíveis no banco de dados
 $mesas = [];
-$result = $conexao->query("SELECT numero FROM mesa WHERE statusMesa = 'livre' ORDER BY numero ASC");
+$result = $conexao->query("SELECT numero FROM mesa WHERE statusMesa = 'ocupada' ORDER BY numero ASC");
 if ($result && $result->num_rows > 0) {
   while ($row = $result->fetch_assoc()) {
     $mesas[] = $row['numero'];
