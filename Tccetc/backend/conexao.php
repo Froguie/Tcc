@@ -72,6 +72,8 @@ $conexao->query("CREATE TABLE IF NOT EXISTS pedido (
     statusPedido VARCHAR(50),
     horarioPedido TIME,
     codAdicional INT,
+    quantidade INT,
+    numeroMesa INT,
     FOREIGN KEY (codProPe) REFERENCES produto(codProduto),
     FOREIGN KEY (codMesa) REFERENCES mesa(codMesa),
     FOREIGN KEY (codAdicional) REFERENCES adicional(codAdicional)

@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $insertFuncionario = $conexao->prepare("INSERT IGNORE INTO funcionario (codFuncionario, nomeFuncionario) VALUES (?, ?)");
                     $insertFuncionario->bind_param("is", $id, $nome);
                     $insertFuncionario->execute();
-                    header('Location: ./funcionario.php');
+                    header('Location: ./teste/funcionario.php');
                     break;
                 
                 case 'administrador':
@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $insertCozinha = $conexao->prepare("INSERT IGNORE INTO cozinha (codCozinha, nomeCozinha) VALUES (?, ?)");
                     $insertCozinha->bind_param("is", $id, $nome);
                     $insertCozinha->execute();
-                    header('Location: ./cozinha.php');
+                    header('Location: ./teste/cozinha.php');
                     break;
             }
             $_SESSION['nome'] = $nome;
