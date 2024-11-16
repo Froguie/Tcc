@@ -6,10 +6,8 @@ $mesaSelecionada = "Nenhuma mesa selecionada"; // Mensagem padrão
 
 // Verificar se há uma mesa selecionada na sessão
 if (isset($_SESSION['mesaSelecionada'])) {
-    // Pegar o número ou ID da mesa da sessão
     $numeroMesa = $_SESSION['mesaSelecionada'];
-    
-    // Buscar o nome da mesa no banco de dados
+
     $sql = "SELECT nomeMesa FROM mesa WHERE numero = ?";
     $stmt = $conexao->prepare($sql);
     $stmt->bind_param("i", $numeroMesa);
@@ -18,15 +16,20 @@ if (isset($_SESSION['mesaSelecionada'])) {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $mesaSelecionada = $row['nomeMesa'];
+        $mesaSelecionada = htmlspecialchars($row['nomeMesa']);
     } else {
         $mesaSelecionada = "Mesa não encontrada";
     }
     $stmt->close();
 }
 
-// Obter os detalhes do produto com base no ID
-$codProduto = $_GET['id'];
+// Validação de `GET` para o ID do produto
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    echo "Produto não especificado.";
+    exit;
+}
+
+$codProduto = intval($_GET['id']);
 $sql = "SELECT * FROM produto WHERE codProduto = ?";
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $codProduto);
@@ -34,30 +37,27 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-  echo "Produto não encontrado.";
-  exit;
+    echo "Produto não encontrado.";
+    exit;
 }
 
 $produto = $result->fetch_assoc();
 
 // Lidar com o clique no botão "Pedir"
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adicionarAoCarrinho'])) {
-    // Adicionar produto ao carrinho na sessão
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho'])) {
     if (!isset($_SESSION['carrinho'])) {
         $_SESSION['carrinho'] = [];
     }
-    
+
     $produtoCarrinho = [
         'codProduto' => $produto['codProduto'],
         'nomeProduto' => $produto['nomeProduto'],
-        'quantidade' => 1, // Default: 1 unidade do produto
+        'quantidade' => 1, // Default: 1 unidade
         'precoProduto' => $produto['precoProduto'],
     ];
 
-    // Adicionar o produto ao carrinho
     $_SESSION['carrinho'][] = $produtoCarrinho;
 
-    // Redirecionar para o carrinho (ou página de finalização do pedido)
     header("Location: carrinho.php");
     exit;
 }
@@ -78,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adicionarAoCarrinho'])
   <div class="flex min-h-screen">
     <div class="bg-black text-white w-1/4 p-6 flex flex-col justify-between h-screen">
       <div>
-        <button class="text-3xl font-bold mb-4">&nbsp;</button>
         <h1 class="text-2xl font-semibold">Brother's Burger</h1>
         <div class="flex justify-between items-center mb-4">
           <p class="text-lg font-semibold text-orange-800">
@@ -92,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adicionarAoCarrinho'])
           <a href="cardapio.php?categoria=Bebida" class="block text-orange-300 hover:text-white transition-colors">Bebidas</a>
         </nav>
       </div>
-      <button class="bg-orange-800 text-orange-300 py-3 mt-8 rounded hover:bg-orange-700 transition duration-300">Finalizar pedido</button>
+      <a href="carrinho.php" class="bg-orange-800 text-orange-300 py-3 mt-8 rounded hover:bg-orange-700 transition duration-300 text-center block">Finalizar pedido</a>
     </div>
 
     <!-- Detalhes do Produto -->
@@ -103,7 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adicionarAoCarrinho'])
       <div class="flex items-start space-x-8">
         <!-- Imagem do produto -->
         <div class="w-48 h-48 bg-orange-300 rounded overflow-hidden">
-          <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover" alt="Imagem do Produto">
+          <?php if (!empty($produto['imagemProduto'])): ?>
+            <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover" alt="Imagem do Produto">
+          <?php else: ?>
+            <p class="text-center text-gray-500">Sem imagem disponível</p>
+          <?php endif; ?>
         </div>
 
         <!-- Informações do produto -->
@@ -115,7 +118,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['adicionarAoCarrinho'])
 
       <!-- Botão de Pedido -->
       <form method="POST" class="mt-6 flex justify-center">
-        <button type="submit" name="adicionarAoCarrinho" class="bg-black text-white py-3 px-8 rounded-lg font-semibold hover:bg-orange-900 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-300">Pedir</button>
+        <button type="submit" name="adicionarAoCarrinho" class="bg-black text-white py-3 px-8 rounded-lg font-semibold hover:bg-orange-900 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-300">
+          Pedir
+        </button>
       </form>
     </div>
   </div>

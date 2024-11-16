@@ -77,7 +77,8 @@ if (isset($_GET['adicionar_produto'])) {
 }
 
 // Função para pegar pedidos de uma mesa específica
-function getPedidosPorMesa($numeroMesa) {
+function getPedidosPorMesa($numeroMesa)
+{
   global $conexao;
   $sql = "SELECT p.nomeProduto, p.precoProduto, pe.quantidade
           FROM pedido pe
@@ -89,7 +90,7 @@ function getPedidosPorMesa($numeroMesa) {
   $result = $stmt->get_result();
   $pedidos = [];
   while ($row = $result->fetch_assoc()) {
-      $pedidos[] = $row;
+    $pedidos[] = $row;
   }
   return $pedidos;
 }
@@ -98,6 +99,7 @@ function getPedidosPorMesa($numeroMesa) {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,6 +107,7 @@ function getPedidosPorMesa($numeroMesa) {
   <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-orange-200">
   <!-- Sidebar -->
   <div id="sidebar" class="bg-black text-white w-64 p-6 flex flex-col justify-between h-screen fixed left-0 top-0">
@@ -116,8 +119,7 @@ function getPedidosPorMesa($numeroMesa) {
         <select id="mesaSelect" name="mesaSelecionada" class="text-black bg-white rounded-md px-2 py-1 w-full">
           <option value="">Selecione a Mesa</option>
           <?php foreach ($mesas as $numeroMesa): ?>
-            <option value="<?php echo $numeroMesa; ?>" 
-              <?php echo (isset($_SESSION['mesaSelecionada']) && $_SESSION['mesaSelecionada'] == $numeroMesa) ? 'selected' : ''; ?>>
+            <option value="<?php echo $numeroMesa; ?>" <?php echo (isset($_SESSION['mesaSelecionada']) && $_SESSION['mesaSelecionada'] == $numeroMesa) ? 'selected' : ''; ?>>
               Mesa <?php echo $numeroMesa; ?>
             </option>
           <?php endforeach; ?>
@@ -150,17 +152,20 @@ function getPedidosPorMesa($numeroMesa) {
     <h3 class="text-3xl font-semibold mb-8 text-orange-500">Todos os Produtos</h3>
     <div id="todos" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
       <?php foreach ($todosProdutos as $produto): ?>
-        <a href="?adicionar_produto=<?php echo $produto['codProduto']; ?>">
-          <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer">
+        <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
+          <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300">
             <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">
-              <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>" class="w-full h-full object-cover">
+              <img src="data:image/jpeg;base64,<?php echo base64_encode($produto['imagemProduto']); ?>"
+                class="w-full h-full object-cover" alt="<?php echo htmlspecialchars($produto['nomeProduto']); ?>">
             </div>
-            <p class="text-orange-700 font-semibold mt-4"><?php echo $produto['nomeProduto']; ?></p>
+            <p class="text-orange-700 font-semibold mt-4"><?php echo htmlspecialchars($produto['nomeProduto']); ?></p>
             <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
           </div>
         </a>
+
       <?php endforeach; ?>
     </div>
   </div>
 </body>
+
 </html>
