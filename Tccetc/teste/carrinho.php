@@ -1,12 +1,35 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['carrinho']) || empty($_SESSION['carrinho'])) {
-    echo "<p class='text-center text-red-500 font-semibold'>Carrinho vazio.</p>";
-    exit;
+// Verificar se o carrinho existe
+if (!isset($_SESSION['carrinho'])) {
+    $_SESSION['carrinho'] = [];
 }
 
+// Lógica para manipulação do carrinho
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['atualizarCarrinho'])) {
+        // Atualizar as quantidades
+        foreach ($_POST['quantidades'] as $index => $novaQuantidade) {
+            $_SESSION['carrinho'][$index]['quantidade'] = max(1, intval($novaQuantidade));
+        }
+        header("Location: carrinho.php");
+        exit;
+    } elseif (isset($_POST['limparCarrinho'])) {
+        // Limpar o carrinho
+        $_SESSION['carrinho'] = [];
+        header("Location: carrinho.php");
+        exit;
+    }
+}
+
+// Calcular o total do carrinho
+$total = 0;
+foreach ($_SESSION['carrinho'] as $item) {
+    $total += $item['precoProduto'] * $item['quantidade'];
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -18,46 +41,57 @@ if (!isset($_SESSION['carrinho']) || empty($_SESSION['carrinho'])) {
 </head>
 
 <body class="bg-gray-100">
-
     <!-- Container Principal -->
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-
         <!-- Título -->
         <h2 class="text-3xl font-bold text-center mb-6 text-orange-600">Seu Carrinho</h2>
+        <form method="POST">
 
-        <!-- Lista de Itens -->
-        <ul class="space-y-6">
-            <?php
-            $total = 0;
-            foreach ($_SESSION['carrinho'] as $item) {
-                echo "<li class='flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200'>";
-                echo "<div>";
-                echo "<p class='text-lg font-semibold text-gray-800'>" . htmlspecialchars($item['nomeProduto']) . "</p>";
-                echo "<p class='text-sm text-gray-500'>Preço: R$ " . number_format($item['precoProduto'], 2, ',', '.') . "</p>";
-                echo "<p class='text-sm text-gray-500'>Quantidade: " . $item['quantidade'] . "</p>";
-                echo "</div>";
-                echo "<div class='text-right'>";
-                echo "<p class='font-semibold text-lg text-gray-900'>R$ " . number_format($item['precoProduto'] * $item['quantidade'], 2, ',', '.') . "</p>";
-                echo "</div>";
-                echo "</li>";
-                $total += $item['precoProduto'] * $item['quantidade'];
-            }
-            ?>
-        </ul>
+            <!-- Exibição do Carrinho -->
+            <ul class="space-y-6">
+                <?php foreach ($_SESSION['carrinho'] as $index => $item): ?>
+                    <li class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">
+                                <?php echo htmlspecialchars($item['nomeProduto']); ?>
+                            </p>
+                            <p class="text-sm text-gray-500">Preço: R$
+                                <?php echo number_format($item['precoProduto'], 2, ',', '.'); ?>
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" name="quantidades[<?php echo $index; ?>]"
+                                value="<?php echo $item['quantidade']; ?>" min="1" class="border w-16 text-center" />
+                            <p class="text-lg font-semibold">R$
+                                <?php echo number_format($item['precoProduto'] * $item['quantidade'], 2, ',', '.'); ?>
+                            </p>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
 
-        <!-- Total -->
-        <div class="mt-6 text-right">
-            <p class='text-xl font-semibold text-gray-900'>Total: R$ <?php echo number_format($total, 2, ',', '.'); ?>
-            </p>
-        </div>
+            <div class="mt-6 text-right">
+                <p class="text-xl font-semibold text-gray-900">Total: R$
+                    <?php echo number_format($total, 2, ',', '.'); ?>
+                </p>
+            </div>
 
-        <!-- Botão Finalizar Pedido -->
-        <div class="mt-8 text-center">
-            <a href="finalizar_pedido.php"
-                class="bg-orange-300 text-white py-2 px-6 rounded-lg hover:bg-orange-500 transition duration-300">Finalizar
-                Pedido</a>
-        </div>
-
+            <!-- Botões -->
+            <div class="mt-8 flex justify-between">
+                <button type="submit" name="atualizarCarrinho"
+                    class="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">
+                    Atualizar Carrinho
+                </button>
+                <button type="submit" name="limparCarrinho"
+                    class="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition">
+                    Limpar Carrinho
+                </button>
+                <a href="finalizar_pedido.php"
+                    class="bg-orange-300 text-white py-2 px-6 rounded-lg hover:bg-orange-500 transition">
+                    Finalizar Pedido
+                </a>
+            </div>
+        </form>
     </div>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>

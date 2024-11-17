@@ -3,16 +3,21 @@ session_start();
 include("../backend/conexao.php");
 
 if (!isset($_SESSION['carrinho']) || empty($_SESSION['carrinho'])) {
-    echo "Carrinho vazio. Não é possível finalizar o pedido.";
+    echo "<p style='color: red;'>Carrinho vazio. Não é possível finalizar o pedido.</p>";
     exit;
 }
 
 // Verificar se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Recuperar os dados do formulário
-    $nome = $_POST['nome'];
-    $endereco = $_POST['endereco'];
-    $telefone = $_POST['telefone'];
+    // Recuperar os dados do formulário com validação básica
+    $nome = trim($_POST['nome']);
+    $endereco = trim($_POST['endereco']);
+    $telefone = trim($_POST['telefone']);
+
+    if (empty($nome) || empty($endereco) || empty($telefone)) {
+        echo "<p style='color: red;'>Por favor, preencha todos os campos obrigatórios.</p>";
+        exit;
+    }
 
     // Calcular o total do pedido
     $total = 0;
@@ -21,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Simular pagamento fictício (simulação de sucesso)
-    $pagamentoSimulado = 1; // Forçando pagamento bem-sucedi
+    $pagamentoSimulado = 1; // Forçando pagamento bem-sucedido
     if ($pagamentoSimulado == 0) {
-        echo "Pagamento falhou. Tente novamente.";
+        echo "<p style='color: red;'>Pagamento falhou. Tente novamente.</p>";
         exit;
     }
 
@@ -31,26 +36,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sqlPedido = "INSERT INTO pedidosfinal (nome, endereco, telefone, total) VALUES (?, ?, ?, ?)";
     $stmtPedido = $conexao->prepare($sqlPedido);
     $stmtPedido->bind_param("sssd", $nome, $endereco, $telefone, $total);
-    $stmtPedido->execute();
-    $pedidoId = $stmtPedido->insert_id;
 
-    // Inserir os itens do pedido
-    foreach ($_SESSION['carrinho'] as $item) {
-        $sqlItem = "INSERT INTO itenspedidosfinal (pedido_id, produto_id, nomeProduto, precoProduto, quantidade) 
-                    VALUES (?, ?, ?, ?, ?)";
-        $stmtItem = $conexao->prepare($sqlItem);
-        $stmtItem->bind_param("iisdi", $pedidoId, $item['codProduto'], $item['nomeProduto'], $item['precoProduto'], $item['quantidade']);
-        $stmtItem->execute();
+    if ($stmtPedido->execute()) {
+        $pedidoId = $stmtPedido->insert_id;
+
+        // Inserir os itens do pedido
+        foreach ($_SESSION['carrinho'] as $item) {
+            $sqlItem = "INSERT INTO itenspedidosfinal (pedido_id, produto_id, nomeProduto, precoProduto, quantidade) 
+                        VALUES (?, ?, ?, ?, ?)";
+            $stmtItem = $conexao->prepare($sqlItem);
+            $stmtItem->bind_param("iisdi", $pedidoId, $item['codProduto'], $item['nomeProduto'], $item['precoProduto'], $item['quantidade']);
+            $stmtItem->execute();
+        }
+
+        // Limpar o carrinho após o pedido ser concluído
+        unset($_SESSION['carrinho']);
+
+        // Redirecionar para a página de confirmação
+        header("Location: pedido_concluido.php?id=$pedidoId");
+        exit;
+    } else {
+        echo "<p style='color: red;'>Erro ao processar o pedido. Tente novamente.</p>";
     }
-
-    // Limpar o carrinho
-    unset($_SESSION['carrinho']);
-
-    // Redirecionar para uma página de confirmação
-    header("Location: pedido_concluido.php?id=$pedidoId");
-    exit;
 }
-
 ?>
 
 <!DOCTYPE html>

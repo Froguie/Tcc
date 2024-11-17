@@ -42,7 +42,7 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-orange-300 min-h-screen flex flex-col">
+<body class="bg-orange-300 select-none min-h-screen flex flex-col">
     <!--NAVBAR-->
     <nav class="bg-black border-gray-200">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -84,9 +84,9 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
     <!-- Conteúdo Principal -->
     <div class="p-6 flex-1">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">Todos os Produtos</h2>
+            <h2 class="text-xl font-bold">Todos os Produtos</h2>
             <a href="registrarProduto.php"
-                class="bg-black text-white px-6 py-3 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">
+                class="bg-black text-white  transition duration-50 px-6 py-3 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">
                 Adicionar Produto
             </a>
         </div>
@@ -94,8 +94,8 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
         <!-- Categorias de Produtos -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Pratos -->
-            <div class="bg-white p-4 rounded-lg shadow-md relative group">
-                <h3 class="text-lg font-semibold mb-2">Pratos</h3>
+            <div class="bg-black p-4 rounded-lg shadow-md relative group">
+                <h3 class="text-lg font-semibold mb-2 text-white">Pratos</h3>
                 <?php if (count($produtosPratos) > 0): ?>
                     <?php foreach ($produtosPratos as $produto): ?>
                         <div class="p-2 border-b flex items-center space-x-4 relative group">
@@ -107,7 +107,7 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
 
                             <!-- Nome e preço do produto -->
                             <div class="flex-1">
-                                <p class="font-semibold"><?= htmlspecialchars($produto['nomeProduto']); ?></p>
+                                <p class="font-semibold text-white"><?= htmlspecialchars($produto['nomeProduto']); ?></p>
                                 <p class="text-sm text-gray-500">R$<?= number_format($produto['precoProduto'], 2, ',', '.'); ?>
                                 </p>
                             </div>
@@ -125,8 +125,8 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
             </div>
 
             <!-- Sobremesas -->
-            <div class="bg-white p-4 rounded-lg shadow-md relative group">
-                <h3 class="text-lg font-semibold mb-2">Sobremesas</h3>
+            <div class="bg-black p-4 rounded-lg shadow-md relative group">
+                <h3 class="text-lg font-semibold mb-2 text-white">Sobremesas</h3>
                 <?php if (count($produtosSobremesas) > 0): ?>
                     <?php foreach ($produtosSobremesas as $produto): ?>
                         <div class="p-2 border-b flex items-center space-x-4 relative group">
@@ -156,8 +156,8 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
             </div>
 
             <!-- Bebidas -->
-            <div class="bg-white p-4 rounded-lg shadow-md relative group">
-                <h3 class="text-lg font-semibold mb-2">Bebidas</h3>
+            <div class="bg-black p-4 rounded-lg shadow-md relative group">
+                <h3 class="text-lg font-semibold mb-2 text-white">Bebidas</h3>
                 <?php if (count($produtosBebidas) > 0): ?>
                     <?php foreach ($produtosBebidas as $produto): ?>
                         <div class="p-2 border-b flex items-center space-x-4 relative group">
