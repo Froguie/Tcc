@@ -3,6 +3,7 @@ session_start();
 include("../backend/conexao.php");
 
 $maxmesa = 12;
+$message = '';
 
 // Lógica de processamento do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
