@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho']
   $codProduto = intval($_POST['codProduto']);
   $nomeProduto = htmlspecialchars($_POST['nomeProduto']);
   $precoProduto = floatval($_POST['precoProduto']);
+  $imagemProduto = $_POST['imagemProduto'];
 
   // Verificar se o produto já está no carrinho
   $existe = false;
@@ -71,11 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho']
       'nomeProduto' => $nomeProduto,
       'quantidade' => 1,
       'precoProduto' => $precoProduto,
+      'imagemProduto' => $imagemProduto
     ];
   }
 
-  header("Location: carrinho.php");
+  // Atualizar a quantidade no carrinho
+  header("Location: produtoDescricao.php?id=" . $codProduto);
   exit;
+}
+
+// Calcular a quantidade total no carrinho
+$quantidadeCarrinho = isset($_SESSION['carrinho']) ? array_sum(array_column($_SESSION['carrinho'], 'quantidade')) : 0;
+$totalCarrinho = 0;
+foreach ($_SESSION['carrinho'] as $item) {
+  $totalCarrinho += $item['precoProduto'] * $item['quantidade'];
 }
 ?>
 
@@ -95,42 +105,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho']
       carrinhoSidebar.classList.toggle("translate-x-full");
     }
 
-    // Adicionar o produto ao carrinho
-    function adicionarAoCarrinho(produtoId, nomeProduto, precoProduto) {
-      const carrinhoItens = document.getElementById("carrinho-itens");
-
-      // Adicionar item ao carrinho
-      const novoItem = document.createElement("div");
-      novoItem.className = "flex justify-between items-center border-b pb-2 mb-2";
-      novoItem.innerHTML = `
-        <div>
-          <p class="font-semibold text-lg">${nomeProduto}</p>
-          <p class="text-sm text-gray-500">R$ ${precoProduto}</p>
-        </div>
-        <div class="flex items-center">
-          <button onclick="alterarQuantidade(this, -1)" class="bg-red-500 text-white px-2 py-1 rounded-l">-</button>
-          <input type="text" value="1" class="w-10 text-center border mx-1" readonly />
-          <button onclick="alterarQuantidade(this, 1)" class="bg-green-500 text-white px-2 py-1 rounded-r">+</button>
-        </div>
-      `;
-
-      carrinhoItens.appendChild(novoItem);
-
-      // Mostrar a sidebar
-      toggleCarrinho();
-    }
-
-    // Alterar a quantidade de itens no carrinho
-    function alterarQuantidade(button, delta) {
-      const quantidadeInput = button.parentElement.querySelector("input");
-      let quantidadeAtual = parseInt(quantidadeInput.value);
-      quantidadeAtual += delta;
-
-      if (quantidadeAtual > 0) {
-        quantidadeInput.value = quantidadeAtual;
-      } else {
-        button.parentElement.parentElement.remove(); // Remove o item se a quantidade for 0
-      }
+    // Remover item do carrinho
+    function removerDoCarrinho(codProduto) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "removerProdutoCarrinho.php"; // Arquivo PHP para remover o produto
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "codProduto";
+      input.value = codProduto;
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
     }
   </script>
 </head>
@@ -194,6 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho']
           <input type="hidden" name="codProduto" value="<?php echo $produto['codProduto']; ?>" />
           <input type="hidden" name="nomeProduto" value="<?php echo htmlspecialchars($produto['nomeProduto']); ?>" />
           <input type="hidden" name="precoProduto" value="<?php echo $produto['precoProduto']; ?>" />
+          <input type="hidden" name="imagemProduto" value="<?php echo base64_encode($produto['imagemProduto']); ?>" />
           <button name="adicionarAoCarrinho" type="submit"
             class="bg-black text-white py-3 px-8 rounded-lg font-semibold hover:bg-orange-900 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-300">
             Adicionar ao Carrinho
@@ -203,17 +190,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['adicionarAoCarrinho']
     </div>
   </div>
 
-  <!-- Sidebar do Carrinho -->
+  <!-- Carrinho -->
   <div id="carrinho-sidebar"
-    class="fixed top-0 right-0 bg-white shadow-lg h-full w-80 translate-x-full transition-transform duration-300">
-    <div class="p-4">
-      <h2 class="text-2xl font-bold border-b pb-2 mb-4">Carrinho</h2>
-      <div id="carrinho-itens"></div>
-      <a href="carrinho.php"
-        class="block bg-black text-white py-3 px-6 mt-4 text-center rounded hover:bg-gray-800 transition">Ir para o
-        Carrinho</a>
+    class="fixed right-0 top-0 w-80 bg-white p-6 pb-16 h-full transform translate-x-full transition-transform">
+    <h2 class="text-xl font-semibold mb-4">Carrinho</h2>
+    <!-- Verifique se há itens no carrinho -->
+    <?php if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])): ?>
+      <div id="carrinho-itens" class="space-y-4 overflow-y-auto">
+        <?php foreach ($_SESSION['carrinho'] as $item): ?>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+              <!-- Verifique se a imagem está corretamente definida -->
+              <?php if (!empty($item['imagemProduto'])): ?>
+                <img src="data:image/jpeg;base64,<?php echo $item['imagemProduto']; ?>" class="w-12 h-12 object-cover"
+                  alt="Produto">
+              <?php else: ?>
+                <img src="default-image.jpg" class="w-12 h-12 object-cover" alt="Produto">
+              <?php endif; ?>
+
+              <div>
+                <p class="text-sm"><?php echo htmlspecialchars($item['nomeProduto']); ?></p>
+                <p class="text-sm text-gray-500">R$ <?php echo number_format($item['precoProduto'], 2, ',', '.'); ?> x
+                  <?php echo $item['quantidade']; ?>
+                </p>
+              </div>
+            </div>
+
+            <button onclick="removerDoCarrinho(<?php echo $item['codProduto']; ?>)"
+              class="text-red-500 hover:text-red-700">Remover</button>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php else: ?>
+      <p class="text-center text-gray-500">Seu carrinho está vazio.</p>
+    <?php endif; ?>
+
+    <div class="mt-4 text-xl font-bold">
+      Total: R$ <?php echo number_format($totalCarrinho, 2, ',', '.'); ?>
     </div>
+
+    <button onclick="toggleCarrinho()" class="mt-4 text-black">&times</button>
   </div>
+
+  <!-- Carrinho flutuante -->
+  <button onclick="toggleCarrinho()"
+    class="fixed bottom-6 right-6 bg-orange-800 text-white py-3 px-6 rounded-full shadow-lg">
+    <span>Ver Carrinho (<?php echo $quantidadeCarrinho; ?>)</span>
+  </button>
 
 </body>
 
