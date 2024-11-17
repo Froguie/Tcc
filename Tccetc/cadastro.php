@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="cadastro.php" method="POST" class="space-y-5">
             <div>
                 <label for="nome" class="text-white block mb-1">Usuário:</label>
-                <input placeholder="João Victor" type="text" name="nome" id="nome"
+                <input placeholder="Seu nome" type="text" name="nome" id="nome"
                     class="w-full border rounded p-2 text-black" required>
             </div>
             <div>
