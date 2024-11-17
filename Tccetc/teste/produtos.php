@@ -129,7 +129,7 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
                 <h3 class="text-lg font-semibold mb-2 text-white">Sobremesas</h3>
                 <?php if (count($produtosSobremesas) > 0): ?>
                     <?php foreach ($produtosSobremesas as $produto): ?>
-                        <div class="p-2 border-b flex items-center space-x-4 relative group">
+                        <div class="p-2 border-b flex text-white items-center space-x-4 relative group">
                             <!-- Exibição da imagem -->
                             <?php if (!empty($produto['imagemProduto'])): ?>
                                 <img src="data:image/jpeg;base64,<?= base64_encode($produto['imagemProduto']); ?>"
@@ -160,7 +160,7 @@ $produtosBebidas = getProdutosPorCategoria('Bebida');
                 <h3 class="text-lg font-semibold mb-2 text-white">Bebidas</h3>
                 <?php if (count($produtosBebidas) > 0): ?>
                     <?php foreach ($produtosBebidas as $produto): ?>
-                        <div class="p-2 border-b flex items-center space-x-4 relative group">
+                        <div class="p-2 border-b flex text-white items-center space-x-4 relative group">
                             <!-- Exibição da imagem -->
                             <?php if (!empty($produto['imagemProduto'])): ?>
                                 <img src="data:image/jpeg;base64,<?= base64_encode($produto['imagemProduto']); ?>"

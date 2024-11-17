@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-orange-300 min-h-screen flex flex-col">
+<body class="bg-orange-300 min-h-screen flex flex-col text-white">
     <!-- Navbar -->
     <nav class="bg-black border-gray-200">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <!-- Conteúdo Principal -->
-    <div class="p-6 flex-1">
+    <div class="p-6 flex-1 rounded-lg shadow-lg">
         <h2 class="text-xl font-semibold mb-4">Adicionar Novo Produto</h2>
 
         <?php if (isset($erro)): ?>
@@ -105,30 +105,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="flex space-x-4">
                 <!-- Nome e Preço -->
                 <div class="flex-1">
-                    <label for="nome" class="block text-sm font-medium text-gray-700">Nome</label>
-                    <input type="text" id="nome" name="nome" class="mt-1 p-2 w-full border rounded-md" required>
+                    <label for="nome" class="block text-sm font-medium text-gray-300">Nome</label>
+                    <input type="text" id="nome" name="nome" class="mt-1 p-2 w-full border rounded-md bg-orange-400 text-white" required>
 
-                    <label for="preco" class="block text-sm font-medium text-gray-700 mt-4">Preço</label>
-                    <input type="number" id="preco" name="preco" class="mt-1 p-2 w-full border rounded-md" step="0.01" required>
+                    <label for="preco" class="block text-sm font-medium text-gray-300 mt-4">Preço</label>
+                    <input type="number" id="preco" name="preco" class="mt-1 p-2 w-full border rounded-md bg-orange-400 text-white" step="0.01" required>
                 </div>
 
                 <!-- Descrição -->
                 <div class="flex-1">
-                    <label for="descricao" class="block text-sm font-medium text-gray-700">Descrição</label>
-                    <textarea id="descricao" name="descricao" class="mt-1 p-2 w-full border rounded-md" rows="5" required></textarea>
+                    <label for="descricao" class="block text-sm font-medium text-gray-300">Descrição</label>
+                    <textarea id="descricao" name="descricao" class="mt-1 p-2 w-full border rounded-md bg-orange-400 text-white" rows="5" required></textarea>
                 </div>
 
                 <!-- Imagem -->
                 <div class="flex-1">
-                    <label for="imagem" class="block text-sm font-medium text-gray-700">Imagem</label>
-                    <input type="file" id="imagem" name="imagem" class="mt-1 p-2 w-full border rounded-md" accept="image/*" required>
+                    <label for="imagem" class="block text-sm font-medium text-gray-300">Imagem</label>
+                    <input type="file" id="imagem" name="imagem" class="mt-1 p-2 w-full border rounded-md bg-orange-400 text-white" accept="image/*" required>
                 </div>
             </div>
 
             <!-- Categoria -->
             <div>
-                <label for="categoria" class="block text-sm font-medium text-gray-700">Categoria</label>
-                <select id="categoria" name="categoria" class="mt-1 p-2 w-full border rounded-md" required>
+                <label for="categoria" class="block text-sm font-medium text-gray-300">Categoria</label>
+                <select id="categoria" name="categoria" class="mt-1 p-2 w-full border rounded-md bg-orange-400 text-white" required>
                     <option value="Prato">Prato</option>
                     <option value="Sobremesa">Sobremesa</option>
                     <option value="Bebida">Bebida</option>
