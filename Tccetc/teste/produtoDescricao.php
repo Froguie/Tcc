@@ -229,7 +229,7 @@ foreach ($_SESSION['carrinho'] as $item) {
       Total: R$ <?php echo number_format($totalCarrinho, 2, ',', '.'); ?>
     </div>
 
-    <button onclick="toggleCarrinho()" class="mt-4 text-black">&times</button>
+    <button onclick="toggleCarrinho()" class="mt-4 text-black bg-red-500">Fechar</button>
   </div>
 
   <!-- Carrinho flutuante -->
