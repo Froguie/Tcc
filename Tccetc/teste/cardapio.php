@@ -2,6 +2,25 @@
 include("../backend/conexao.php");
 session_start();
 
+// Verificar a categoria selecionada
+$categoriaSelecionada = isset($_GET['categoria']) ? $_GET['categoria'] : 'todos';
+
+// Obter produtos por categoria
+$sql = "SELECT * FROM produto";
+if ($categoriaSelecionada != 'todos') {
+    $sql .= " WHERE categoriaProduto = '$categoriaSelecionada'";
+}
+$result = $conexao->query($sql);
+
+$produtos = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $produtos[] = $row;
+    }
+} else {
+    echo "<p class='text-center text-gray-600'>Nenhum produto encontrado.</p>";
+}
+
 // Consulta as mesas disponíveis no banco de dados
 $mesas = [];
 $result = $conexao->query("SELECT numero FROM mesa WHERE statusMesa = 'ocupada' ORDER BY numero ASC");
@@ -188,11 +207,19 @@ if (isset($_POST['adicionar'])) {
 
     <!-- Links de Categorias -->
     <ul class="space-y-4 text-lg">
-      <li class="cursor-pointer hover:text-orange-300 transition-all" onclick="showTab('todos')">Todos os Produtos</li>
-      <li class="cursor-pointer hover:text-orange-300 transition-all" onclick="showTab('pratos')">Pratos</li>
-      <li class="cursor-pointer hover:text-orange-300 transition-all" onclick="showTab('sobremesas')">Sobremesas</li>
-      <li class="cursor-pointer hover:text-orange-300 transition-all" onclick="showTab('bebidas')">Bebidas</li>
-    </ul>
+    <li class="cursor-pointer hover:text-orange-300 transition-all">
+        <a href="?categoria=todos" class="block">Todos os Produtos</a>
+    </li>
+    <li class="cursor-pointer hover:text-orange-300 transition-all">
+        <a href="?categoria=prato" class="block">Pratos</a>
+    </li>
+    <li class="cursor-pointer hover:text-orange-300 transition-all">
+        <a href="?categoria=sobremesa" class="block">Sobremesas</a>
+    </li>
+    <li class="cursor-pointer hover:text-orange-300 transition-all">
+        <a href="?categoria=bebida" class="block">Bebidas</a>
+    </li>
+</ul>
 
     <button class="bg-orange-500 text-white py-3 mt-8 rounded text-lg hover:bg-orange-600" onclick="finalizarPedido()">
       Finalizar pedido
@@ -255,9 +282,9 @@ if (isset($_POST['adicionar'])) {
 
   <!-- Conteúdo Principal -->
   <div class="ml-64 p-8">
-    <h3 class="text-3xl font-semibold mb-8 text-orange-500">Todos os Produtos</h3>
+    <h3 class="text-3xl font-semibold mb-8 text-orange-500"></h3>
     <div id="todos" class="tab-content grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-      <?php foreach ($todosProdutos as $produto): ?>
+      <?php foreach ($produtos as $produto): ?>
         <a href="produtoDescricao.php?id=<?php echo $produto['codProduto']; ?>">
           <div class="bg-white rounded-lg shadow-lg p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300">
             <div class="w-full h-40 bg-gray-400 rounded-md overflow-hidden">

@@ -18,7 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['limparCarrinho'])) {
         // Limpar o carrinho
         $_SESSION['carrinho'] = [];
-        header("Location: carrinho.php");
+        
+        // Redirecionar para a página cardapio.php após limpar a comanda
+        header("Location: cardapio.php");
         exit;
     }
 }
@@ -47,7 +49,7 @@ foreach ($_SESSION['carrinho'] as $item) {
     <div class="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">
 
         <!-- Título -->
-        <h2 class="text-3xl font-bold text-center mb-6 text-orange-600">Seu Carrinho</h2>
+        <h2 class="text-3xl font-bold text-center mb-6 text-orange-600">Sua Comanda</h2>
 
         <form method="POST">
 
@@ -84,15 +86,15 @@ foreach ($_SESSION['carrinho'] as $item) {
             <div class="mt-8 flex justify-between items-center">
                 <button type="submit" name="atualizarCarrinho"
                     class="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-all focus:ring-4 focus:ring-blue-200 active:scale-95">
-                    Atualizar Carrinho
+                    Atualizar Comanda
                 </button>
                 <button type="submit" name="limparCarrinho"
                     class="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-700 transition-all focus:ring-4 focus:ring-red-200 active:scale-95">
-                    Limpar Carrinho
+                    Limpar Comanda
                 </button>
                 <a href="finalizar_pedido.php"
                     class="bg-orange-500 text-white py-2 px-6 rounded-lg hover:bg-orange-700 transition-all focus:ring-4 focus:ring-orange-200 active:scale-95">
-                    Finalizar Pedido
+                    Finalizar Compra
                 </a>
             </div>
         </form>

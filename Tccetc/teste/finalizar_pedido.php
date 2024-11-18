@@ -66,17 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalizar Pedido</title>
+    <title>Finalizar Compra</title>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
 <body class="bg-gray-200">
 
 <div class="max-w-4xl mx-auto p-6 bg-white shadow-md mt-10 rounded">
-    <h2 class="text-3xl font-bold text-center mb-6">Finalizar Pedido</h2>
+    <h2 class="text-3xl font-bold text-center mb-6">Finalizar Compra</h2>
 
     <!-- Mostrar itens do carrinho -->
     <div class="mb-6">
-        <h3 class="text-xl font-semibold">Itens no Carrinho</h3>
+        <h3 class="text-xl font-semibold">Itens na Comanda</h3>
         <ul class="space-y-4">
             <?php
             $total = 0;
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 
-        <button type="submit" class="w-full bg-orange-600 text-white py-3 rounded font-semibold hover:bg-orange-700">Confirmar Pedido</button>
+        <button type="submit" class="w-full bg-orange-600 text-white py-3 rounded font-semibold hover:bg-orange-700">Confirmar Pagamento</button>
     </form>
 </div>
 <script src="https://cdn.tailwindcss.com"></script>
