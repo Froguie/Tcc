@@ -115,12 +115,20 @@ function getPedidosPorMesa($numeroMesa)
 }
 
 // Calcular a quantidade total no carrinho
-$quantidadeCarrinho = isset($_SESSION['carrinho']) ? array_sum(array_column($_SESSION['carrinho'], 'quantidade')) : 0;
+if (isset($_SESSION['carrinho']) && is_array($_SESSION['carrinho'])) {
+  $quantidadeCarrinho = array_sum(array_column($_SESSION['carrinho'], 'quantidade'));
 $totalCarrinho = 0;
 foreach ($_SESSION['carrinho'] as $item) {
-  $totalCarrinho += $item['precoProduto'] * $item['quantidade'];
+  // Garante que 'precoProduto' e 'quantidade' estão definidos
+  if (isset($item['precoProduto']) && isset($item['quantidade'])) {
+      $totalCarrinho += $item['precoProduto'] * $item['quantidade'];
+  }
 }
-
+} else {
+// Caso não haja carrinho ou esteja vazio, define valores padrão
+$quantidadeCarrinho = 0;
+$totalCarrinho = 0;
+}
 
 
 // Lógica para remover um item do carrinho
