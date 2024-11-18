@@ -271,7 +271,7 @@ if (isset($_POST['adicionar'])) {
       Total: R$ <?php echo number_format($totalCarrinho, 2, ',', '.'); ?>
     </div>
 
-    <button onclick="toggleCarrinho()" class="mt-4 text-black bg-red-500">Fechar</button>
+    
   </div>
 
     <!-- Botão de Ver Carrinho -->
