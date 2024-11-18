@@ -24,13 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'tipoConta' => $tipoConta
             ];
 
-            // Copiar dados para a tabela correspondente, se necessário
+            // Redirecionamento baseado no tipo de conta
             switch ($tipoConta) {
                 case 'mesa':
                     $insertMesa = $conexao->prepare("INSERT IGNORE INTO mesa (codMesa, nomeMesa) VALUES (?, ?)");
                     $insertMesa->bind_param("is", $id, $nome);
                     $insertMesa->execute();
                     header('Location: ./teste/cardapio.php');
+                    exit();
                     break;
                 
                 case 'funcionario':
@@ -38,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $insertFuncionario->bind_param("is", $id, $nome);
                     $insertFuncionario->execute();
                     header('Location: ./teste/funcionario.php');
+                    exit();
                     break;
                 
                 case 'administrador':
@@ -45,17 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $insertAdmin->bind_param("is", $id, $nome);
                     $insertAdmin->execute();
                     header('Location: ./teste/admin.php');
+                    exit();
                     break;
                 
                 case 'cozinha':
                     $insertCozinha = $conexao->prepare("INSERT IGNORE INTO cozinha (codCozinha, nomeCozinha) VALUES (?, ?)");
                     $insertCozinha->bind_param("is", $id, $nome);
                     $insertCozinha->execute();
-                    header('Location: ./teste/cozinha.php');
+                    header('Location: ./teste/cozinha.php'); // Redireciona para a página de cozinha
+                    exit();
                     break;
             }
-            $_SESSION['nome'] = $nome;
-            exit();
         } else {
             echo "<script>alert('Senha incorreta.');</script>";
         }
@@ -66,7 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $conexao->close();
 }
-
 ?>
 
 <!DOCTYPE html>
