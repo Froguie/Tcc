@@ -45,36 +45,35 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-// Verifica se o formulário foi enviado para editar
+// Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = $_POST['nome'];
-    $preco = $_POST['preco'];
-    $descricao = $_POST['descricao'];
-    $categoria = $_POST['categoria'];
+    if (isset($_POST['deletar'])) { // Exclusão
+        if (deletarProduto($_GET['id'])) {
+            header("Location: produtos.php");
+            exit();
+        } else {
+            $erro = "Erro ao deletar o produto.";
+        }
+    } else { // Atualização
+        $nome = $_POST['nome'];
+        $preco = $_POST['preco'];
+        $descricao = $_POST['descricao'];
+        $categoria = $_POST['categoria'];
 
-    // Processa a imagem
-    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] == 0) {
-        $imagem = file_get_contents($_FILES['imagem']['tmp_name']);
-    } else {
-        $imagem = $produto['imagemProduto']; // Mantém a imagem atual
-    }
+        // Processa a imagem
+        if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] == 0) {
+            $imagem = file_get_contents($_FILES['imagem']['tmp_name']);
+        } else {
+            $imagem = $produto['imagemProduto']; // Mantém a imagem atual
+        }
 
-    // Atualiza o produto
-    if (atualizarProduto($_GET['id'], $nome, $preco, $descricao, $categoria, $imagem)) {
-        header("Location: produtos.php");
-        exit();
-    } else {
-        $erro = "Erro ao atualizar o produto.";
-    }
-}
-
-// Verifica se o botão de deletar foi clicado
-if (isset($_POST['deletar'])) {
-    if (deletarProduto($_GET['id'])) {
-        header("Location: produtos.php");
-        exit();
-    } else {
-        $erro = "Erro ao deletar o produto.";
+        // Atualiza o produto
+        if (atualizarProduto($_GET['id'], $nome, $preco, $descricao, $categoria, $imagem)) {
+            header("Location: produtos.php");
+            exit();
+        } else {
+            $erro = "Erro ao atualizar o produto.";
+        }
     }
 }
 ?>
@@ -170,14 +169,14 @@ if (isset($_POST['deletar'])) {
 
             <div class="flex justify-between mt-6">
                 <button type="submit"
-                    class="bg-black text-white px-6 py-3 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">Atualizar
-                    Produto</button>
+                    class="bg-black text-white px-6 py-3 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">
+                    Atualizar Produto
+                </button>
 
-                <form action="editarProduto.php?id=<?= $produto['codProduto']; ?>" method="POST">
-                    <button type="submit" name="deletar"
-                        class="bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition duration-300 ease-in-out">Deletar
-                        Produto</button>
-                </form>
+                <button type="submit" name="deletar"
+                    class="bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition duration-300 ease-in-out">
+                    Deletar Produto
+                </button>
             </div>
         </form>
     </div>

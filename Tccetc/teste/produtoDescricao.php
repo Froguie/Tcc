@@ -143,9 +143,6 @@ foreach ($_SESSION['carrinho'] as $item) {
             class="block text-orange-300 hover:text-white transition-colors">Bebidas</a>
         </nav>
       </div>
-      <a href="carrinho.php"
-        class="bg-orange-800 text-orange-300 py-3 mt-8 rounded hover:bg-orange-700 transition duration-300 text-center block">Finalizar
-        pedido</a>
     </div>
 
     <!-- Detalhes do Produto -->
@@ -232,11 +229,7 @@ foreach ($_SESSION['carrinho'] as $item) {
     <button onclick="toggleCarrinho()" class="mt-4 text-black bg-red-500">Fechar</button>
   </div>
 
-  <!-- Carrinho flutuante -->
-  <button onclick="toggleCarrinho()"
-    class="fixed bottom-6 right-6 bg-orange-800 text-white py-3 px-6 rounded-full shadow-lg">
-    <span>Ver Carrinho (<?php echo $quantidadeCarrinho; ?>)</span>
-  </button>
+  
 
 </body>
 

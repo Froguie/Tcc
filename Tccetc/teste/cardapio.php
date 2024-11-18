@@ -95,6 +95,49 @@ function getPedidosPorMesa($numeroMesa)
   return $pedidos;
 }
 
+// Calcular a quantidade total no carrinho
+$quantidadeCarrinho = isset($_SESSION['carrinho']) ? array_sum(array_column($_SESSION['carrinho'], 'quantidade')) : 0;
+$totalCarrinho = 0;
+foreach ($_SESSION['carrinho'] as $item) {
+  $totalCarrinho += $item['precoProduto'] * $item['quantidade'];
+}
+
+// Lógica para remover um item do carrinho
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remover_produto'])) {
+  $codProdutoRemover = $_POST['remover_produto'];
+
+  if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+      foreach ($_SESSION['carrinho'] as $key => $item) {
+          if ($item['codProduto'] == $codProdutoRemover) {
+              unset($_SESSION['carrinho'][$key]);
+              break;
+          }
+      }
+      $_SESSION['carrinho'] = array_values($_SESSION['carrinho']);
+  }
+  header("Location: " . $_SERVER['PHP_SELF']);
+  exit;
+}
+// Supondo que o item seja adicionado ao carrinho
+if (isset($_POST['adicionar'])) {
+  $numeroMesa = $_POST['numeroMesa'];
+  $item = $_POST['item'];
+  $quantidade = $_POST['quantidade'];
+  $preco = $_POST['preco'];
+  // Verifica se já existe um carrinho na sessão
+  if (!isset($_SESSION['carrinhos'][$numeroMesa])) {
+    $_SESSION['carrinhos'][$numeroMesa] = []; // Cria o carrinho se não existir
+    }
+    // Adiciona o item ao carrinho da mesa
+    $_SESSION['carrinhos'][$numeroMesa][] = [
+      'item' => $item,
+      'quantidade' => $quantidade,
+      'preco' => $preco
+  ];
+  // Redireciona para a página de mesas
+  header('Location: caixa.php');
+  exit();
+  }
 ?>
 
 <!DOCTYPE html>
@@ -106,9 +149,17 @@ function getPedidosPorMesa($numeroMesa)
   <title>Cardápio</title>
   <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Gerenciar a exibição da sidebar do carrinho
+    function toggleCarrinho() {
+      const carrinhoSidebar = document.getElementById("carrinho-sidebar");
+      carrinhoSidebar.classList.toggle("translate-x-full");
+    }
+  </script>
 </head>
 
 <body class="bg-orange-200">
+
   <!-- Sidebar -->
   <div id="sidebar" class="bg-black text-white w-64 p-6 flex flex-col justify-between h-screen fixed left-0 top-0">
     <h2 class="text-2xl font-bold mb-8 text-center">Brother's Burger</h2>
@@ -145,6 +196,57 @@ function getPedidosPorMesa($numeroMesa)
       Finalizar pedido
       <span id="badgeCarrinho" class="ml-2 text-white bg-red-500 rounded-full px-2 py-1 text-sm hidden"></span>
     </button>
+
+      <!-- Carrinho -->
+  <div id="carrinho-sidebar"
+    class="fixed right-0 top-0 w-80 bg-white p-6 pb-16 h-full transform translate-x-full transition-transform">
+    <h2 class="text-xl font-semibold mb-4">Carrinho</h2>
+    <!-- Verifique se há itens no carrinho -->
+    <?php if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])): ?>
+      <div id="carrinho-itens" class="space-y-4 overflow-y-auto">
+        <?php foreach ($_SESSION['carrinho'] as $item): ?>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+              
+              <!-- Verifique se a imagem está corretamente definida -->
+              <?php if (!empty($item['imagemProduto'])): ?>
+                <img src="data:image/jpeg;base64,<?php echo $item['imagemProduto']; ?>" class="w-12 h-12 object-cover"
+                  alt="Produto">
+              <?php else: ?>
+                <img src="default-image.jpg" class="w-12 h-12 object-cover" alt="Produto">
+              <?php endif; ?>
+
+              <div>
+                <p class="text-sm text-gray-500"><?php echo htmlspecialchars($item['nomeProduto']); ?></p>
+                <p class="text-sm text-gray-500">R$ <?php echo number_format($item['precoProduto'], 2, ',', '.'); ?> x
+                  <?php echo $item['quantidade']; ?>
+                </p>
+              </div>
+            </div>
+
+            <!-- Botão de Remover -->
+          <form method="POST" class="inline">
+            <input type="hidden" name="remover_produto" value="<?php echo $item['codProduto']; ?>">
+            <button type="submit" class="text-red-500 hover:text-red-700">Remover</button>
+          </form>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php else: ?>
+      <p class="text-center text-gray-500">Seu carrinho está vazio.</p>
+    <?php endif; ?>
+
+    <div class="mt-4 text-xl font-bold">
+      Total: R$ <?php echo number_format($totalCarrinho, 2, ',', '.'); ?>
+    </div>
+
+    <button onclick="toggleCarrinho()" class="mt-4 text-black bg-red-500">Fechar</button>
+  </div>
+
+    <!-- Botão de Ver Carrinho -->
+    <button onclick="toggleCarrinho()" class="fixed bottom-6 right-6 bg-orange-800 text-white py-3 px-6 rounded-full shadow-lg">
+      <span>Ver Carrinho (<?php echo $quantidadeCarrinho; ?>)</span>
+    </button>
   </div>
 
   <!-- Conteúdo Principal -->
@@ -162,10 +264,15 @@ function getPedidosPorMesa($numeroMesa)
             <p class="text-gray-600">R$ <?php echo number_format($produto['precoProduto'], 2, ',', '.'); ?></p>
           </div>
         </a>
-
       <?php endforeach; ?>
     </div>
   </div>
+
+  <script>
+    function finalizarPedido() {
+      window.location.href = "carrinho.php"; // redireciona para a página de carrinho
+    }
+  </script>
 </body>
 
 </html>
