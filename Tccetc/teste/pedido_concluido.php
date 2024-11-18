@@ -37,14 +37,14 @@ $pedido = $result->fetch_assoc();
 <body class="bg-gray-200">
 
 <div class="max-w-4xl mx-auto p-6 bg-white shadow-md mt-10 rounded">
-    <h2 class="text-3xl font-bold text-center mb-6">Pedido Concluído</h2>
+    <h2 class="text-3xl font-bold text-center mb-6">Pagamento Concluído</h2>
 
     <h3 class="text-xl font-semibold">Obrigado, <?php echo htmlspecialchars($pedido['nome']); ?>!</h3>
-    <p class="mt-4">Seu pedido foi realizado com sucesso. Abaixo estão os detalhes do seu pedido:</p>
+    <p class="mt-4">Seu pagamento foi realizado com sucesso. Abaixo estão os detalhes do seu pagamento:</p>
 
     <div class="mt-6">
-        <p><strong>Endereço:</strong> <?php echo htmlspecialchars($pedido['endereco']); ?></p>
-        <p><strong>Telefone:</strong> <?php echo htmlspecialchars($pedido['telefone']); ?></p>
+        <p><strong>Endereço:</strong> <?php echo htmlspecialchars($pedido['numero da mesa']); ?></p>
+        <p><strong>Telefone:</strong> <?php echo htmlspecialchars($pedido['metodo']); ?></p>
         <p><strong>Total:</strong> R$ <?php echo number_format($pedido['total'], 2, ',', '.'); ?></p>
         <p><strong>Status do pagamento:</strong> Pago com sucesso!</p>
     </div>

@@ -102,6 +102,8 @@ foreach ($_SESSION['carrinho'] as $item) {
   $totalCarrinho += $item['precoProduto'] * $item['quantidade'];
 }
 
+
+
 // Lógica para remover um item do carrinho
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remover_produto'])) {
   $codProdutoRemover = $_POST['remover_produto'];
@@ -207,6 +209,8 @@ if (isset($_POST['adicionar'])) {
         <?php foreach ($_SESSION['carrinho'] as $item): ?>
           <div class="flex justify-between items-center">
             <div class="flex items-center space-x-4">
+
+            
               
               <!-- Verifique se a imagem está corretamente definida -->
               <?php if (!empty($item['imagemProduto'])): ?>

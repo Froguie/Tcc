@@ -100,14 +100,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <div>
-            <label for="endereco" class="block text-gray-700 font-semibold">Endereço</label>
-            <input type="text" name="endereco" id="endereco" required class="w-full p-3 border border-gray-300 rounded mt-2">
+            <label for="numero da mesa" class="block text-gray-700 font-semibold">Número da Mesa</label>
+            <input type="text" name="numero da mesa" id="numero da mesa" required class="w-full p-3 border border-gray-300 rounded mt-2">
         </div>
 
         <div>
-            <label for="telefone" class="block text-gray-700 font-semibold">Telefone</label>
-            <input type="tel" name="telefone" id="telefone" required class="w-full p-3 border border-gray-300 rounded mt-2">
-        </div>
+    <label for="pagamento" class="block text-gray-700 font-semibold">Forma de Pagamento</label>
+    <select name="pagamento" id="pagamento" required class="w-full p-3 border border-gray-300 rounded mt-2 bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500">
+        <option value="credito">Cartão de Crédito</option>
+        <option value="debito">Cartão de Débito</option>
+        <option value="dinheiro">Dinheiro</option>
+        <option value="pix">PIX</option>
+    </select>
+</div>
+
 
         <button type="submit" class="w-full bg-orange-600 text-white py-3 rounded font-semibold hover:bg-orange-700">Confirmar Pedido</button>
     </form>
